@@ -18,4 +18,5 @@ ISP_suf$date <- as.Date(ISP_suf$date, "%m/%d/%y")
 
 #3. Guardar
 save(ISP_suf, file = "informe_resultados/data/ISP_suf.RData")
-
+ISP_privisoria <- ISP_suf %>% select(-c(respondent_id:ip_address,mail))
+save(ISP_privisoria, file = "informe_resultados/data/ISP_privisoria.RData")
