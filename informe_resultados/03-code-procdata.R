@@ -4,7 +4,7 @@
 pacman::p_load(haven,dplyr, tidyverse,lubridate)
 
 #2. Cargar base de datos -----
-ISP <- read_sav(file= "informe_resultados/data/Condiciones Laborales en Pandemia - Región Interamericana - ISP.sav")
+load("informe_resultados/data/ISP_merge.RData")
 
 #3. Explorar base de datos ----
 dim(ISP)
@@ -29,6 +29,7 @@ table(ISP$date_created, useNA = "ifany")
 
 # "date_modified"
 table(ISP$date_modified, useNA = "ifany")
+
 #Se elimina
 
 # "ip_address"

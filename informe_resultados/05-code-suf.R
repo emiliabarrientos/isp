@@ -7,7 +7,7 @@ load("informe_resultados/data/ISP_proc.RData")
 
 ## Criterios para definir una observacion como completa 
 #1. LLegar al modulo de modalidad de trabajo 
-sum(is.na(ISP_proc$d5_mod)) #548
+sum(is.na(ISP_proc$d5_mod)) #683
 
 ISP_suf <- filter(ISP_proc, !is.na(d5_mod))
 
