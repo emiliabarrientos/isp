@@ -4,9 +4,7 @@
 pacman::p_load(haven,dplyr, tidyverse,lubridate)
 
 #2. Cargar base de datos -----
-ISP <- read.csv(file= "informe_resultados/data/Condiciones Laborales en Pandemia - Región Interamericana - ISP.csv")
-
-#ISP <- read_sav(file= "informe_metodologico/data/ISP.sav")
+ISP <- read_sav(file= "informe_resultados/data/Condiciones Laborales en Pandemia - Región Interamericana - ISP.sav")
 
 #3. Explorar base de datos ----
 dim(ISP)
@@ -59,789 +57,492 @@ ISP[1] <- sapply(ISP[1],as.numeric) # id a numerica
 #ISP$date_created <- as.Date(ISP$date_created) - revisar
 
 ## A. Modulo Sociodemograficas ----
-# a0_pais ("") - Pais----
-ISP$a0_pais <- as.character(ISP$x)
-ISP$a0_pais <- car::recode(ISP$a0_pais, recodes = c(""))
+# a0_pais ("q0001") - Pais----
+table(ISP$q0001)
+ISP$a0_pais <- as.character(ISP$q0001)
+ISP$a0_pais <- car::recode(ISP$a0_pais, recodes = c("1='Argentina';2='Brasil'; 3='Colombia'; 4='Costa Rica';
+                                                    5='Ecuador';6='México';7='Perú'"))
 
+table(ISP$a0_pais)
 # a1_sexo ("q0001") - Sexo --------------------
-ISP$q0001 <- as.factor(ISP$q0001)
-ISP$a1_sexo <- car::recode(ISP$q0001, recodes = c("1='Masculino';2='Femenino';3='Otro'"), as.factor = T)
-# a2_edad ("q0002") Edad   -------------        
-ISP$a2_edad <- as.numeric(ISP$q0002)
+table(ISP$q0002)
+ISP$q0002 <- as.factor(ISP$q0002)
+ISP$a1_sexo <- car::recode(ISP$q0002, recodes = c("1='Masculino';2='Femenino';3='Otro'"), as.factor = T)
+
+# a2_edad ("q0005") Edad   -------------        
+table(ISP$q0005)
+ISP$a2_edad <- as.numeric(ISP$q0005)
 ISP <- ISP %>% mutate(edad_cat = case_when(a2_edad < 36 ~ "Jóvenes",
                                            a2_edad > 36 ~ "Adultos",
                                            TRUE ~ NA_character_))
 table(ISP$edad_cat)
 ISP %>% select(a2_edad, edad_cat)
-# a3_educ ("q0003") Educacion ----------------------
-ISP$q0003 <- as.factor(ISP$q0003)
-ISP$a3_educ <- car::recode(ISP$q0003, recodes = c("1='Sin estudios';2='Basica';3='Media';4='Tecnico Profesional';5='Universitaria';6='Posgrado'"), as.factor = T,
+# a3_educ ("q0006") Educacion ----------------------
+table(ISP$q0006)
+ISP$q0006 <- as.factor(ISP$q0006)
+ISP$a3_educ <- car::recode(ISP$q0006, recodes = c("1='Sin estudios';2='Basica';3='Media';4='Tecnico Profesional';5='Universitaria';6='Posgrado'"), as.factor = T,
                            levels = c("Sin estudios","Basica","Media","Tecnico Profesional","Universitaria", "Posgrado"))
 levels(ISP$a3_educ) #verificar
+table(ISP$a3_educ)
+
+
+# Etnia (table(ISP$q0003))
+table(ISP$q0003)
+ISP$q0003 <- as.factor(ISP$q0003)
+ISP$a5_etnia <- car::recode(ISP$q0003, recodes = c("1='Si';2='No'"), as.factor = T)
+table(ISP$a5_etnia)
+
 # a6.1, a6.2 y a6.3 (q0021, q0022,, q0023) - Familia ------------------ 
-ISP$a6.1 <- as.numeric(ISP$q0021)
-ISP$a6.2 <- as.numeric(ISP$q0022)
-ISP$a6.3 <- as.numeric(ISP$q0023)
+ISP$a6.1 <- as.numeric(ISP$q0007)
 
 # Filtro
-ISP$a6.2.filtro <- as.factor(ISP$x)
-ISP$a6.2.filtro <- car::recode(ISP$a6.2.filtro, recodes = c("='Mi esposo (a) o pareja con la que vivo';='Mi esposo (a) o pareja con la que no vivo';='Ex esposo (a) o ex pareja';='Otra persona (padre, madre, hijos (as), otro familiar, otra persona)'"), as.factor = T,
+table((ISP$q0008))
+ISP$a6.2 <- as.factor(ISP$q0008)
+ISP$a6.2 <- car::recode(ISP$a6.2, recodes = c("1='Soy el principal sonten económico de mi hogar';2='Comparto con otra persona el sontén económico de mi hogar';3='Otra persona es el principal sostén del hogar'"), as.factor = T,
+                               levels = c('Soy el principal sonten económico de mi hogar','Comparto con otra persona el sontén económico de mi hogar','Otra persona es el principal sostén del hogar'))
+
+table(ISP$a6.2)
+
+# a6.2Filtro
+table((ISP$q0009))
+ISP$a6.2.filtro <- as.factor(ISP$q0009)
+ISP$a6.2.filtro <- car::recode(ISP$a6.2.filtro, recodes = c("1='Mi esposo (a) o pareja con la que vivo';
+                                                            2='Mi esposo (a) o pareja con la que no vivo';
+                                                            3='Ex esposo (a) o ex pareja';
+                                                            4='Otra persona (padre, madre, hijos (as), otro familiar, otra persona)'"), as.factor = T,
                                levels = c('Mi esposo (a) o pareja con la que vivo','Mi esposo (a) o pareja con la que no vivo','Ex esposo (a) o ex pareja','Otra persona (padre, madre, hijos (as), otro familiar, otra persona)'))
 
+table((ISP$a6.2.filtro))
 
+# a6.3
+ISP$a6.3 <- as.numeric(ISP$q0010)
+ISP$a6.4 <- as.numeric(ISP$q0011)
+ISP$a6.5 <- as.numeric(ISP$q0012)
+
+table((ISP$q0013))
 # B. Modulo Empleo ------------------------------------------------------
-# b1 - (q0024- q0024_other) Servicio que trabaja --------------
-ISP$b <- as.character(ISP$q0024)
-table(ISP$b)
-#Other
-ISP$q0024_other[ISP$q0024_other == ""] <- NA
-table(ISP$q0024_other)# 3507 personas rellenaron con otros
 
-#Crear funciones
-clean_strings <- function( s ) {
-  clz <- class( s )
-  s %<>%
-    gsub( "^\\s+", "" , . ) %>% # leading whitepace
-    gsub( "\\s+$", "" , . ) %>% # trailing whitespace
-    gsub( "\"+", "\"", . )  %>% # embedded "'s
-    as( clz ) # u don't mess with the type
-  return( s )
-}
-simplify_strings <- function( s ) {
-  s %<>%
-    clean_strings() %>%
-    gsub( "á", "a", . ) %>%
-    gsub( "é", "e", . ) %>%
-    gsub( "í", "i", . ) %>%
-    gsub( "ó", "o", . ) %>%
-    gsub( "ú", "u", . ) %>%
-    tolower()
-  return( s )
-}
+# b1 - (q0013) Servicio que trabaja --------------
+ISP$b1 <- as.factor(ISP$q0013)
+ISP$b1 <- car::recode(ISP$b1, recodes = c("1='Administración Central';2='Gobiernos Regionales';3='Gobiernos Locales/Municipales';4='Poder Judicial';5='Poder Legislativo';6='Salud';7='Agua';8='Energía'; 9= 'Educación'; 10='Otro'"), as.factor = T,
+                      levels = c('Administración Central','Gobiernos Regionales','Gobiernos Locales/Municipales','Poder Judicial','Poder Legislativo','Salud','Agua','Energía','Educación','Otro'))
 
-ISP$b1.2 <- ISP$q0024_other
-ISP$b1.2 <- ISP$b1.2 %>% simplify_strings()
-write.csv(ISP$b1.2, file = "data/isp-sector.csv")
-## 99 No responde; 88 No sabe; 85 No aplica; 77 Otros; 66 Falta Info
-isp_sector <- read.csv(file = "data/isp-sector2.csv", sep = ";")
-ISP <- cbind(ISP, isp_sector) 
-ISP$b1_otro_cod <- as.character(ISP$b1_otro_cod)
-#Imputar
-ISP <- ISP %>% mutate(b1 = ifelse(is.na(b1_otro_cod), b, b1_otro_cod))
-#Recodificar
-ISP$b1 <- as.factor(ISP$b1)
-ISP$b1 <- car::recode(ISP$b1, recodes = c("1='Salud Municipal';2='Salud Hospitalaria';3='Educacion Municipal';4='Educacion Universitaria';5='Municipal';6='Judicial';7='Obras Sanitarias';0='Otros'; 8= 'Administracion Central'; 9='SII'; 10='Gendarmería'; 99=99; 85=85;66=66"), as.factor = T)
-ISP <- ISP %>% select(-c(b,b1_otro,b1_otro_cod))
+table(ISP$q0013)
+table(ISP$b1)
 
-# b2_ reg (q0025) - Region de trabajo -----------
-ISP$q0025 <- as.factor(ISP$q0025)
-ISP$b2_reg <- car::recode(ISP$q0025, recodes = c("1='Arica-Parinacota';2='Tarapaca';3='Antofagasta';4='Atacama';5='Coquimbo';6='Valparaiso'; 7='Metropolitana';8='OHiggins';9='Maule';10='Nuble';11='Biobio';12='Araucania';13='Los-Rios';14='Los-Lagos'; 15='Aysen'; 16='Magallanes'; NA=NA"), as.factor = T,
-                          levels = c('Tarapaca','Antofagasta','Atacama','Coquimbo','Valparaiso','OHiggins','Maule','Biobio','Araucania','Los-Lagos','Aysen','Magallanes','Metropolitana','Los-Rios','Arica-Parinacota','Nuble'))
-levels(ISP$b2_reg)
-
-# b2_ comuna (q0026-q00020) - Comuna de residencia ---------------
-table(ISP$q0020)
-ISP <- ISP %>% mutate(b2_comuna = case_when(q0026 == 1 ~"Arica",
-                                            q0026 == 2 ~"Camarones",
-                                            q0026 == 4 ~"General Lagos",
-                                            q0027 == 1 ~"Iquique",
-                                            q0027 == 4 ~"Huara",
-                                            q0027 == 5 ~"Pica",
-                                            q0027 == 6 ~"Pozo Almonte",
-                                            q0027 == 7 ~"Alto Hospicio",
-                                            q0028 == 1 ~"Antofagasta",
-                                            q0028 == 2 ~"Mejillones",
-                                            q0028 == 3 ~"Sierra Gorda",
-                                            q0028 == 4 ~"Taltal",
-                                            q0028 == 5 ~"Calama",
-                                            q0028 == 7 ~"San Pedro de Atacama",
-                                            q0028 == 8 ~"Tocopilla",
-                                            q0029 == 1 ~"Copiapo",
-                                            q0029 == 2 ~"Caldera",
-                                            q0029 == 3 ~"Tierra Amarilla",
-                                            q0029 == 4 ~"Chanaral",
-                                            q0029 == 5 ~"Diego de Almagro",
-                                            q0029 == 6 ~"Vallenar",
-                                            q0029 == 8 ~"Freirina",
-                                            q0029 == 9 ~"Huasco",
-                                            q0030 == 1 ~"La Serena",
-                                            q0030 == 2 ~"Coquimbo",
-                                            q0030 == 3 ~"Andacollo",
-                                            q0030 == 4 ~"La Higuera",
-                                            q0030 == 5 ~"Paiguano",
-                                            q0030 == 6 ~"Vicuna",
-                                            q0030 == 7 ~"Illapel",
-                                            q0030 == 8 ~"Canela",
-                                            q0030 == 9 ~"Los Vilos",
-                                            q0030 == 10 ~"Salamanca",
-                                            q0030 == 11 ~"Ovalle",
-                                            q0030 == 12 ~"Combarbala",
-                                            q0030 == 13 ~"Monte Patria",
-                                            q0030 == 14 ~"Punitaqui",
-                                            q0031 == 1 ~ "Valparaiso",
-                                            q0031 == 2 ~ "Casablanca",
-                                            q0031 == 3 ~ "Concon",
-                                            q0031 == 6 ~ "Quilpue",
-                                            q0031 == 7 ~ "Quintero",
-                                            q0031 == 8 ~ "Villa Alemana",
-                                            q0031 == 9 ~ "Vina del Mar",
-                                            q0031 == 10 ~ "Isla de Pascua",
-                                            q0031 == 11 ~ "Los Andes",
-                                            q0031 == 12 ~ "Calle Larga",
-                                            q0031 == 13 ~ "Rinconada",
-                                            q0031 == 14 ~ "San Esteban",
-                                            q0031 == 15 ~ "La Ligua",
-                                            q0031 == 16 ~ "Cabildo",
-                                            q0031 == 18 ~ "Petorca",
-                                            q0031 == 20 ~ "Quillota",
-                                            q0031 == 21 ~ "Calera",
-                                            q0031 == 22 ~ "Hijuelas",
-                                            q0031 == 23 ~ "La Cruz",
-                                            q0031 == 24 ~ "Limache",
-                                            q0031 == 25 ~ "Nogales",
-                                            q0031 == 26 ~ "Olmue",
-                                            q0031 == 27 ~ "San Antonio",
-                                            q0031 == 28 ~ "Algarrobo",
-                                            q0031 == 29 ~ "Cartagena", 
-                                            q0031 == 30 ~ "El Quisco",
-                                            q0031 == 31 ~ "El Tabo",
-                                            q0031 == 32 ~ "Santo Domingo", 
-                                            q0031 == 33 ~ "San Felipe",
-                                            q0031 == 34 ~ "Catemu",
-                                            q0031 == 35 ~ "Llaillay",
-                                            q0031 == 36 ~ "Panquehue",
-                                            q0031 == 37 ~ "Putaendo",
-                                            q0031 == 38 ~ "Santa Maria",
-                                            q0032 == 1 ~ "Santiago",
-                                            q0032 == 2 ~ "Cerrillos",
-                                            q0032 == 3 ~ "Cerro Navia",
-                                            q0032 == 4 ~ "Conchali",
-                                            q0032 == 5 ~ "El Bosque",
-                                            q0032 == 6 ~ "Estacion Central",
-                                            q0032 == 7 ~ "Huechuraba",
-                                            q0032 == 8 ~ "Independencia",
-                                            q0032 == 9 ~ "La Cisterna",
-                                            q0032 == 10 ~ "La Florida", 
-                                            q0032 == 11 ~ "La Granja", 
-                                            q0032 == 12 ~ "La Pintana",
-                                            q0032 == 13 ~ "La Reina", 
-                                            q0032 == 14 ~ "Las Condes", 
-                                            q0032 == 15 ~ "Lo Barnechea",
-                                            q0032 == 16 ~ "Lo Espejo", 
-                                            q0032 == 17 ~ "Lo Prado",
-                                            q0032 == 18 ~ "Macul", 
-                                            q0032 == 19 ~ "Maipu", 
-                                            q0032 == 20 ~ "Nunoa", 
-                                            q0032 == 21 ~ "Pedro Aguirre Cerda",
-                                            q0032 == 22 ~ "Penalolen", 
-                                            q0032 == 23 ~ "Providencia", 
-                                            q0032 == 24 ~ "Pudahuel",
-                                            q0032 == 25 ~ "Quilicura", 
-                                            q0032 == 26 ~ "Quinta Normal", 
-                                            q0032 == 27 ~ "Recoleta", 
-                                            q0032 == 28 ~ "Renca",
-                                            q0032 == 29 ~ "San Joaquin", 
-                                            q0032 == 30 ~ "San Miguel",
-                                            q0032 == 31 ~ "San Ramon", 
-                                            q0032 == 32 ~ "Vitacura",
-                                            q0032 == 33 ~ "Puente Alto", 
-                                            q0032 == 34 ~ "Pirque",
-                                            q0032 == 35 ~ "San Jose de Maipo",
-                                            q0032 == 36 ~ "Colina",
-                                            q0032 == 37 ~ "Lampa",
-                                            q0032 == 38 ~ "Tiltil",
-                                            q0032 == 39 ~ "San Bernardo",
-                                            q0032 == 40 ~ "Buin",
-                                            q0032 == 41 ~ "Calera de Tango",
-                                            q0032 == 42 ~ "Paine",
-                                            q0032 == 43 ~ "Melipilla",
-                                            q0032 == 44 ~ "Alhue",
-                                            q0032 == 45 ~ "Curacavi",
-                                            q0032 == 46 ~ "Maria Pinto",
-                                            q0032 == 47 ~ "San Pedro",
-                                            q0032 == 48 ~ "Talagante",
-                                            q0032 == 49 ~ "El Monte",
-                                            q0032 == 50 ~ "Isla de Maipo",
-                                            q0032 == 51 ~ "Padre Hurtado",
-                                            q0032 == 52 ~ "Penaflor",
-                                            q0033 ==  1 ~ "Rancagua",
-                                            q0033 ==  2 ~ "Codegua",
-                                            q0033 ==  3 ~ "Coinco",
-                                            q0033 ==  4 ~ "Coltauco",
-                                            q0033 ==  5 ~ "Donihue",
-                                            q0033 ==  6 ~ "Graneros",
-                                            q0033 ==  7 ~ "Las Cabras",
-                                            q0033 ==  8 ~ "Machali",
-                                            q0033 ==  9 ~ "Malloa",
-                                            q0033 ==  10 ~ "Mostazal",
-                                            q0033 ==  11 ~ "Olivar",
-                                            q0033 ==  12 ~ "Peumo",
-                                            q0033 ==  13 ~ "Pichidegua",
-                                            q0033 ==  14 ~ "Quinta de Tilcoco",
-                                            q0033 ==  15 ~ "Rengo",
-                                            q0033 ==  16 ~ "Requinoa",
-                                            q0033 ==  17 ~ "San Vicente",
-                                            q0033 ==  18 ~ "Pichilemu",
-                                            q0033 ==  21 ~ "Marchihue",
-                                            q0033 ==  22 ~ "Navidad",
-                                            q0033 ==  24 ~ "San Fernando",
-                                            q0033 ==  25 ~ "Chepica",
-                                            q0033 ==  26 ~ "Chimbarongo",
-                                            q0033 ==  27 ~ "Lolol",
-                                            q0033 ==  28 ~ "Nancagua",
-                                            q0033 ==  29 ~ "Palmilla",
-                                            q0033 ==  30 ~ "Peralillo",
-                                            q0033 ==  31 ~ "Placilla",
-                                            q0033 ==  32 ~ "Pumanque",
-                                            q0033 ==  33 ~ "Santa Cruz",
-                                            q0034 ==  1 ~ "Talca",
-                                            q0034 ==  2 ~ "Constitucion",
-                                            q0034 ==  3 ~ "Curepto",
-                                            q0034 ==  4 ~ "Empedrado", 
-                                            q0034 ==  5 ~ "Maule",
-                                            q0034 ==  6 ~ "Pelarco",
-                                            q0034 ==  7 ~ "Pencahue",
-                                            q0034 ==  8 ~ "Rio Claro",
-                                            q0034 ==  9 ~ "San Clemente",
-                                            q0034 ==  10 ~ "San Rafael",
-                                            q0034 ==  11 ~ "Cauquenes",
-                                            q0034 ==  13 ~ "Pelluhue",
-                                            q0034 ==  14 ~ "Curico",
-                                            q0034 ==  15 ~ "Hualane",
-                                            q0034 ==  16 ~ "Licanten",
-                                            q0034 ==  17 ~ "Molina",
-                                            q0034 ==  18 ~ "Rauco",
-                                            q0034 ==  19 ~ "Romeral",
-                                            q0034 ==  20 ~ "Sagrada Familia",
-                                            q0034 ==  21 ~ "Teno",
-                                            q0034 ==  23 ~ "Linares",
-                                            q0034 ==  24 ~ "Colbun",
-                                            q0034 ==  25 ~ "Longavi",
-                                            q0034 ==  26 ~ "Parral",
-                                            q0034 ==  27 ~ "Retiro",
-                                            q0034 ==  28 ~ "San Javier",
-                                            q0034 ==  29 ~ "Villa Alegre",
-                                            q0034 ==  30 ~ "Yerbas Buenas",
-                                            q0035 ==  1 ~ "Concepcion",
-                                            q0035 ==  2 ~ "Coronel",
-                                            q0035 ==  3 ~ "Chiguayante",
-                                            q0035 ==  4 ~ "Florida",
-                                            q0035 ==  5 ~ "Hualqui",
-                                            q0035 ==  6 ~ "Lota",
-                                            q0035 ==  7 ~ "Penco",
-                                            q0035 ==  8 ~ "San Pedro de la Paz",
-                                            q0035 ==  9 ~ "Santa Juana",
-                                            q0035 ==  10 ~ "Talcahuano",
-                                            q0035 ==  11 ~ "Tome",
-                                            q0035 ==  12 ~ "Hualpen",
-                                            q0035 ==  13 ~ "Lebu",
-                                            q0035 ==  14 ~ "Arauco",
-                                            q0035 ==  15 ~ "Canete",
-                                            q0035 ==  17 ~ "Curanilahue",
-                                            q0035 ==  18 ~ "Los Alamos",
-                                            q0035 ==  19 ~ "Tirua",
-                                            q0035 ==  20 ~ "Los Angeles",
-                                            q0035 ==  22 ~ "Cabrero",
-                                            q0035 ==  23 ~ "Laja",
-                                            q0035 ==  24 ~ "Mulchen",
-                                            q0035 ==  25 ~ "Nacimiento",
-                                            q0035 ==  26 ~ "Negrete",
-                                            q0035 ==  28 ~ "Quilleco",
-                                            q0035 ==  29 ~ "San Rosendo",
-                                            q0035 ==  30 ~ "Santa Barbara",
-                                            q0035 ==  32 ~ "Yumbel",
-                                            q0035 ==  39 ~ "Portezuelo",
-                                            q0035 ==  42 ~ "San Fabian",
-                                            q0035 ==  43 ~ "San Nicolas",
-                                            q0035 ==  45 ~ "Treguaco",
-                                            q0036 ==  1 ~ "Chillan",
-                                            q0036 ==  2 ~ "San Carlos",
-                                            q0036 ==  3 ~ "Coihueco",
-                                            q0036 ==  4 ~ "Bulnes",
-                                            q0036 ==  5 ~ "Yunguay",
-                                            q0036 ==  6 ~ "Quillon",
-                                            q0036 ==  7 ~ "Coelemu",
-                                            q0036 ==  8 ~ "El Carmen",
-                                            q0036 ==  9 ~ "Quirihue",
-                                            q0037 ==  1 ~ "Temuco",
-                                            q0037 ==  2 ~ "Carahue",
-                                            q0037 ==  3 ~ "Cunco",
-                                            q0037 ==  4 ~ "Cararrehue",
-                                            q0037 ==  5 ~ "Freire",
-                                            q0037 ==  7 ~ "Gorbea",
-                                            q0037 ==  8 ~ "Lautaro",
-                                            q0037 ==  9 ~ "Loncoche",
-                                            q0037 ==  11 ~ "Nueva Imperial",
-                                            q0037 ==  12 ~ "Padre Las Casas",
-                                            q0037 ==  13 ~ "Perquenco",
-                                            q0037 ==  14 ~ "Pitrufquen",
-                                            q0037 ==  15 ~ "Pucon",
-                                            q0037 ==  16 ~ "Saavedra",
-                                            q0037 ==  17 ~ "Teodoro Schmidt",
-                                            q0037 ==  18 ~ "Tolten",
-                                            q0037 ==  19 ~ "Vilcun",
-                                            q0037 ==  20 ~ "Villarrica",
-                                            q0037 ==  21 ~ "Cholchol",
-                                            q0037 ==  22 ~ "Angol",
-                                            q0037 ==  23 ~ "Collipulli",
-                                            q0037 ==  24 ~ "Curacautin",
-                                            q0037 ==  25 ~ "Ercilla",
-                                            q0037 ==  26 ~ "Lonquimay", 
-                                            q0037 ==  27 ~ "Los Sauces",
-                                            q0037 ==  28 ~ "Lumaco",
-                                            q0037 ==  29 ~ "Puren",
-                                            q0037 ==  30 ~ "Renaico",
-                                            q0037 ==  31 ~ "Traiguen",
-                                            q0037 ==  32 ~ "Victoria",
-                                            q0038 ==  1 ~ "Corral",
-                                            q0038 ==  2 ~ "Lanco",
-                                            q0038 ==  3 ~ "Los Lagos",
-                                            q0038 ==  4 ~ "Mafil",
-                                            q0038 ==  5 ~ "Mariquina",
-                                            q0038 ==  6 ~ "Paillaco",
-                                            q0038 ==  7 ~ "Panguipulli",
-                                            q0038 ==  8 ~ "Valdivia",
-                                            q0038 ==  9 ~ "Futrono",
-                                            q0038 ==  10 ~ "La Union",
-                                            q0038 ==  11 ~ "Lago Ranco",
-                                            q0038 ==  12 ~ "Rio Bueno",
-                                            q0039 ==  1 ~ "Ancud",
-                                            q0039 ==  2 ~ "Castro",
-                                            q0039 ==  3 ~ "Chonchi",
-                                            q0039 ==  4 ~ "Curaco de Velez",
-                                            q0039 ==  5 ~ "Dalcahue",
-                                            q0039 ==  6 ~ "Puqueldon",
-                                            q0039 ==  7 ~ "Queilen",
-                                            q0039 ==  8 ~ "Quemchi",
-                                            q0039 ==  9 ~ "Quellon",
-                                            q0039 ==  10 ~ "Quinchao",
-                                            q0039 ==  11 ~ "Llanquihue",
-                                            q0039 ==  12 ~ "Puerto Montt",
-                                            q0039 ==  13 ~ "Calbuco",
-                                            q0039 ==  14 ~ "Cochamo",
-                                            q0039 ==  15 ~ "Fresia",
-                                            q0039 ==  16 ~ "Frutillar",
-                                            q0039 ==  17 ~ "Los Muermos",
-                                            q0039 ==  18 ~ "Maullin",
-                                            q0039 ==  19 ~ "Puerto Varas",
-                                            q0039 ==  20 ~ "Osorno",
-                                            q0039 ==  21 ~ "Puerto Octay",
-                                            q0039 ==  22 ~ "Purranque",
-                                            q0039 ==  23 ~ "Puyehue",
-                                            q0039 ==  24 ~ "Rio Negro",
-                                            q0039 ==  25 ~ "San Juan de la Costa",
-                                            q0039 ==  26 ~ "San Pablo",
-                                            q0039 ==  28 ~ "Chaiten",
-                                            q0039 ==  29 ~ "Futaleufu",
-                                            q0039 ==  30 ~ "Hualaihue",
-                                            q0040 ==  1 ~ "Coyhaique",
-                                            q0040 ==  3 ~ "Aysen",
-                                            q0040 ==  4 ~ "Cisnes",
-                                            q0040 ==  6 ~ "Cochrane",
-                                            q0040 ==  7 ~ "OHiggins",
-                                            q0040 ==  8 ~ "Tortel",
-                                            q0040 ==  9 ~ "Chile Chico",
-                                            q0041 ==  1 ~ "Punta Arenas",
-                                            q0041 ==  5 ~ "Cabo de Horno",
-                                            q0041 ==  7 ~ "Porvenir",
-                                            q0041 ==  8 ~ "Primavera",
-                                            q0041 ==  9 ~ "Timaukel",
-                                            q0041 ==  10 ~ "Natales "))
-table(ISP$b2_comuna)
-# b3 (q0042) - estamento --------------
-table(ISP$q0042)
-ISP$b3 <- as.factor(ISP$q0042)
-ISP$b3 <- car::recode(ISP$b3, recodes = c("1='Directivo';2='Tecnico';3='Profesional';4='Administrativo';5='Auxiliar'; NA=NA"), as.factor = T,
-                      levels = c('Directivo',  'Profesional', 'Tecnico', 'Administrativo', 'Auxiliar'))
-levels(ISP$b3)
-
-# b4 (q043 abierta) - Ocupacion -------------------
-ISP$b4 <- ISP$q0043
-ISP$b4 <- ISP$b4 %>% simplify_strings()
-write.csv(ISP$b4, file = "data/isp-ocupacion.csv")
-
-#b5 (q044 y q044_otro) Sindicato  --------------
-ISP$b5 <- as.character(ISP$q0044)
-table(ISP$b5)
-#Other
-ISP$q0044_other[ISP$q0044_other == ""] <- NA
-table(ISP$q0044_other)# 3507 personas rellenaron con otros
-
-ISP$b5_other <- ISP$q0044_other
-ISP$b5_other <- ISP$b5_other %>% simplify_strings()
-write.csv(ISP$b5_other, file = "data/isp-sindicatos.csv")
-
-## 99 No responde; 88 No sabe; 85 No aplica; 77 Otros; 66 Falta Info
-isp_sindicatos <- read.csv(file = "data/isp-sindicatos2.csv", sep = ";")
-ISP <- cbind(ISP, isp_sindicatos) 
-ISP$b5_other_cod <- as.character(ISP$b5_other_cod)
-#Imputar
-ISP <- ISP %>% mutate(b5 = ifelse(is.na(b5_other_cod), b5, b5_other_cod))
-
-#Recodificar
-ISP$b5 <- as.factor(ISP$b5)
-## 11 Honorarios
-ISP$b5 <- car::recode(ISP$b5, recodes = c("1='ANEF';2='AFIICH';3='ANEIICH';4='ANEJUD';5='ASEMUCH';6='CONFEMUCH';7='CONFUSAM';8='FENPRUSS';9='FENATRAOS';10='No afiliado';11='Honorarios';0='Otros'; 99=99;88=88;85=85;66=66"), as.factor = T)
-ISP <- ISP %>% select(-c(b5_other2,b5_other,b5_other_cod))
-
-# ANEF - Agrupación Nacional de Empleados Fiscales
-# AFIICH - Asociación Nacional de Fiscalizadores del Servicio de Impuestos Internos
-# Asociación Nacional de Empleados del Servicio de Impuestos Internos (ANEIICH) 
-# Asociación Nacional de Empleados Judiciales de Chile (ANEJUD)  
-# Confederación Nacional de Funcionarios Municipales de Chile (ASEMUCH)  
-# Confederación Nacional de Funcionarios de la Educación Municipal de Chile (CONFEMUCH)  
-# Confederación Nacional de Funcionarios de la Salud Municipal (CONFUSAM)  
-# Confederación de Profesionales Universitarios de los Servicios de Salud (FENPRUSS)  
-# Federación Nacional de Trabajadores de las Obras Sanitarias (FENATRAOS)
-
-# b6 (q0045) - Modalidad contractual --------------
-table(ISP$q0045)
-ISP$b6 <- as.factor(ISP$q0045)
-ISP$b6 <- car::recode(ISP$b6, recodes = c("1='Planta';2='Contrata';3='Honorarios';4='Subcontratado/a'; NA=NA"), as.factor = T,
-                      levels = c('Planta', 'Contrata', 'Honorarios', 'Subcontratado/a'))
-levels(ISP$b6)
-#b7 (q0046) - Jornada de trabajo --------------
-table(ISP$q0046)
-ISP$b7 <- as.factor(ISP$q0046)
-ISP$b7 <- car::recode(ISP$b7, recodes = c("1='Parcial';2='Completa';3='No sujeto a cumplimiento de horario';NA=NA"), as.factor = T,
-                      levels = c('Parcial', 'Completa', 'No sujeto a cumplimiento de horario'))
-levels(ISP$b7)
-
-#b8 (q0047) - horas_antes  --------------
-ISP$b8 <- as.numeric(ISP$q0047)
-summary(ISP$b8) # Luego ver cuantas horas serán las validas
-
-#b9 q0048 - horas_despues  --------------
-ISP$b9 <- as.numeric(ISP$q0048)
-summary(ISP$b9) # Luego ver cuantas horas serán las validas
-
-#b10 q0049 - remuneracion --------------
-table(ISP$q0049)
-ISP$b10 <- as.numeric(ISP$q0049)
-summary(ISP$b10) # Luego ver cuantas horas serán las validas
-
-#C. Seguridad social -----
-#c1 (q0050) - Sistema salud  --------------
-table(ISP$q0050)
-ISP$c1 <- as.factor(ISP$q0050)
-ISP$c1 <- car::recode(ISP$c1, recodes = c("1='FONASA';2='ISAPRE';3='CAPREDENA/DIPRECA';4=88 ;NA=NA"))
 
 # D. Flexibilidad ------
 #Construir desde la d1 a las d4.7
+table(ISP$q0022_0001)
 
 ## D1 Autonomia ------
-## d1.1 (q0051_0001) - velocidad  ----
-table(ISP$q0051_0001)
-ISP$d1.1 <- as.factor(ISP$q0051_0001)
+## d1.1 (q0022_0001) - velocidad  ----
+table(ISP$q0022_0001)
+ISP$d1.1 <- as.factor(ISP$q0022_0001)
 ISP$d1.1 <- car::recode(ISP$d1.1, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
 levels(ISP$d1.1)
-
-## d1.1 (q0051_0002) - cantidad -----
-table(ISP$q0051_0002)
-ISP$d1.2 <- as.factor(ISP$q0051_0002)
+table(ISP$d1.1)
+## d1.1 (q0022_0002) - cantidad -----
+table(ISP$q0022_0002)
+ISP$d1.2 <- as.factor(ISP$q0022_0002)
 ISP$d1.2 <- car::recode(ISP$d1.2, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0051_0003 - orden (d1.3)-----
-table(ISP$q0051_0003)
-ISP$d1.3 <- as.factor(ISP$q0051_0003)
+table(ISP$d1.2)
+## q0022_0003 - orden (d1.3)-----
+table(ISP$q0022_0003)
+ISP$d1.3 <- as.factor(ISP$q0022_0003)
 ISP$d1.3 <- car::recode(ISP$d1.3, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-
-## d1. (q0051_0004) - descanso -----
-table(ISP$q0051_0004)
-ISP$d1.4 <- as.factor(ISP$q0051_0004)
+table(ISP$d1.3)
+## d1. (q0022_0004) - descanso -----
+table(ISP$q0022_0004)
+ISP$d1.4 <- as.factor(ISP$q0022_0004)
 ISP$d1.4 <- car::recode(ISP$d1.4, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+table(ISP$d1.4)
+
 ## D2 - Temporal  --------------------
 
-## d2.1 (q0052_0001) - extension  ----
-table(ISP$q0052_0001)
-ISP$d2.1 <- as.factor(ISP$q0052_0001)
+## d2.1 (q0023_0001) - extension  ----
+table(ISP$q0023_0001)
+ISP$d2.1 <- as.factor(ISP$q0023_0001)
 ISP$d2.1 <- car::recode(ISP$d2.1, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+table(ISP$d2.1)
 
-## d2.2 (q0052_0002) - fines de semana  ----
-table(ISP$q0052_0002)
-ISP$d2.2 <- as.factor(ISP$q0052_0002)
+## d2.2 (q0023_0002) - fines de semana  ----
+table(ISP$q0023_0002)
+ISP$d2.2 <- as.factor(ISP$q0023_0002)
 ISP$d2.2 <- car::recode(ISP$d2.2, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+table(ISP$d2.2)
+
 ## D3 salarial -----
-## d3 (q0053) - extension -------
-table(ISP$q0053)
-ISP$d3 <- as.factor(ISP$q0053)
+## d3 (q0024) - extension -------
+table(ISP$q0024)
+ISP$d3 <- as.factor(ISP$q0024)
 ISP$d3 <- car::recode(ISP$d3, recodes= c("1='Totalmente fijo';2='La mayor parte fijo';3='La mayor parte variable';4='Totalmente variable';NA=NA"), as.factor = T,
                       levels= c("Totalmente fijo", "La mayor parte fijo", "La mayor parte variable", "Totalmente variable"))
+table(ISP$d3)
+
 ## D4 cambio de flexibilidad ----
-## d4.1 (q0054_0001) - velocidad ----
-ISP$d4.1 <- as.factor(ISP$q0054_0001)
+## d4.1 (q0025_0001) - velocidad ----
+table(ISP$q0025_0001)
+ISP$d4.1 <- as.factor(ISP$q0025_0001)
 ISP$d4.1 <- car::recode(ISP$d4.1, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.2 (q0054_0002) - cantidad ----
-ISP$d4.2 <- as.factor(ISP$q0054_0002)
+table(ISP$q0025_0001)
+table(ISP$d4.1)
+## d4.2 (q0025_0002) - cantidad ----
+ISP$d4.2 <- as.factor(ISP$q0025_0002)
 ISP$d4.2 <- car::recode(ISP$d4.2, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.3 (q0054_0003) - orden  ----
-ISP$d4.3 <- as.factor(ISP$q0054_0003)
+table(ISP$q0025_0002)
+table(ISP$d4.2)
+
+## d4.3 (q0025_0003) - orden  ----
+ISP$d4.3 <- as.factor(ISP$q0025_0003)
 ISP$d4.3 <- car::recode(ISP$d4.3, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.4 (q0054_0004) - descanso ----
-ISP$d4.4 <- as.factor(ISP$q0054_0004)
+table(ISP$q0025_0003)
+table(ISP$d4.3)
+
+## d4.4 (q0025_0004) - descanso ----
+
+ISP$d4.4 <- as.factor(ISP$q0025_0004)
 ISP$d4.4 <- car::recode(ISP$d4.4, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.5 (q0054_0005) - extra hora ----
-ISP$d4.5 <- as.factor(ISP$q0054_0005)
+
+table(ISP$q0025_0004)
+table(ISP$d4.4)
+
+## d4.5 (q0025_0005) - extra hora ----
+ISP$d4.5 <- as.factor(ISP$q0025_0005)
 ISP$d4.5 <- car::recode(ISP$d4.5, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.6 (q0054_0006) - fines de semana  ----
-ISP$d4.6 <- as.factor(ISP$q0054_0006)
+
+table(ISP$q0025_0005)
+table(ISP$d4.5)
+
+## d4.6 (q0025_0006) - fines de semana  ----
+ISP$d4.6 <- as.factor(ISP$q0025_0006)
 ISP$d4.6 <- car::recode(ISP$d4.6, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
-## d4.7 (q0054_0007) - salarial ----
-ISP$d4.7 <- as.factor(ISP$q0054_0007)
-ISP$d4.7 <- car::recode(ISP$d4.1, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
+
+table(ISP$q0025_0006)
+table(ISP$d4.6)
+
+## d4.7 (q0025_0007) - salarial ----
+ISP$d4.7 <- as.factor(ISP$q0025_0007)
+ISP$d4.7 <- car::recode(ISP$d4.7, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
                         levels= c("Disminuyo", "Sigue igual", "Aumento"))
+
+table(ISP$q0025_0007)
+table(ISP$d4.7)
+
 ########## Modalidad de trabajo ###################
 # 4. Combinar variables --------
-# q0056
-ISP<-ISP %>% mutate(q56_65=case_when(q0055==2 ~ q0056,
-                                     q0055==1 ~ q0065,
-                                     TRUE ~ NA_character_))
+table(ISP$q0026)
 
-# q0057
+# q0038
 
-ISP %>% subset(!is.na(q0057_0001)&!is.na(ISP$q0066_0001)) %>% select(respondent_id,q0057_0001,q0066_0001,q0055,q57_1)
+ISP %>% subset(!is.na(q0028_0001)&!is.na(ISP$q0038_0001)) %>% select(respondent_id,q0028_0001,q0038_0001,q0026)
 
-ISP<-ISP %>% mutate(q57_1=case_when(q0055==2 ~ q0057_0001, q0055==1 ~ q0066_0001, TRUE ~ NA_real_),
-                    q57_2=case_when(q0055==2 ~ q0057_0002, q0055==1 ~ q0066_0002, TRUE ~ NA_real_),
-                    q57_3=case_when(q0055==2 ~ q0057_0003, q0055==1 ~ q0066_0003, TRUE ~ NA_real_),
-                    q57_4=case_when(q0055==2 ~ q0057_0004, q0055==1 ~ q0066_0004, TRUE ~ NA_real_))
-
-# q0058
-
-ISP<-ISP %>% mutate(q58_1=case_when(q0055==2 ~ q0058_0001, q0055==1 ~ q0067_0001, TRUE ~ NA_real_),
-                    q58_2=case_when(q0055==2 ~ q0058_0002, q0055==1 ~ q0067_0002, TRUE ~ NA_real_),
-                    q58_3=case_when(q0055==2 ~ q0058_0003, q0055==1 ~ q0067_0003, TRUE ~ NA_real_))
+ISP<-ISP %>% mutate(q38_1=case_when(q0026==1 ~ q0028_0001, q0026==2 ~ q0038_0001, TRUE ~ NA_real_),
+                    q38_2=case_when(q0026==1 ~ q0028_0002, q0026==2 ~ q0038_0002, TRUE ~ NA_real_),
+                    q38_3=case_when(q0026==1 ~ q0028_0003, q0026==2 ~ q0038_0003, TRUE ~ NA_real_),
+                    q38_4=case_when(q0026==1 ~ q0028_0004, q0026==2 ~ q0038_0004, TRUE ~ NA_real_))
 
 
-# q0059
+table(ISP$q0026,ISP$q38_1)
+# q0039
 
-ISP<-ISP %>% mutate(q59_1=case_when(q0055==2 ~ q0059_0001, q0055==1 ~ q0068_0001, TRUE ~ NA_real_),
-                    q59_2=case_when(q0055==2 ~ q0059_0002, q0055==1 ~ q0068_0002, TRUE ~ NA_real_),
-                    q59_3=case_when(q0055==2 ~ q0059_0003, q0055==1 ~ q0068_0003, TRUE ~ NA_real_),
-                    q59_4=case_when(q0055==2 ~ q0059_0004, q0055==1 ~ q0068_0004, TRUE ~ NA_real_),
-                    q59_5=case_when(q0055==2 ~ q0059_0005, q0055==1 ~ q0068_0005, TRUE ~ NA_real_))
-
-# q0060
-
-ISP<-ISP %>% mutate(q60_1=case_when(q0055==2 ~ q0060_0001, q0055==1 ~ q0069_0001, TRUE ~ NA_real_),
-                    q60_2=case_when(q0055==2 ~ q0060_0002, q0055==1 ~ q0069_0002, TRUE ~ NA_real_),
-                    q60_3=case_when(q0055==2 ~ q0060_0003, q0055==1 ~ q0069_0003, TRUE ~ NA_real_))
+ISP<-ISP %>% mutate(q39_1=case_when(q0026==1 ~ q0029_0001, q0026==2 ~ q0039_0001, TRUE ~ NA_real_),
+                    q39_2=case_when(q0026==1 ~ q0029_0002, q0026==2 ~ q0039_0002, TRUE ~ NA_real_),
+                    q39_3=case_when(q0026==1 ~ q0029_0003, q0026==2 ~ q0039_0003, TRUE ~ NA_real_))
 
 
-# q0061
+table(ISP$q0026,ISP$q39_1)
 
-ISP<-ISP %>% mutate(q61_1=case_when(q0055==2 ~ q0061_0001, q0055==1 ~ q0070_0001, TRUE ~ NA_real_),
-                    q61_2=case_when(q0055==2 ~ q0061_0002, q0055==1 ~ q0070_0002, TRUE ~ NA_real_),
-                    q61_3=case_when(q0055==2 ~ q0061_0003, q0055==1 ~ q0070_0003, TRUE ~ NA_real_),
-                    q61_4=case_when(q0055==2 ~ q0061_0004, q0055==1 ~ q0070_0004, TRUE ~ NA_real_),
-                    q61_5=case_when(q0055==2 ~ q0061_0005, q0055==1 ~ q0070_0005, TRUE ~ NA_real_),
-                    q61_6=case_when(q0055==2 ~ q0061_0006, q0055==1 ~ q0070_0006, TRUE ~ NA_real_),
-                    q61_7=case_when(q0055==2 ~ q0061_0007, q0055==1 ~ q0070_0007, TRUE ~ NA_real_),
-                    q61_8=case_when(q0055==2 ~ q0061_0008, q0055==1 ~ q0070_0008, TRUE ~ NA_real_))
+# q0040
 
-# q0062
+ISP<-ISP %>% mutate(q40_1=case_when(q0026==1 ~ q0030_0001, q0026==2 ~ q0040_0001, TRUE ~ NA_real_),
+                    q40_2=case_when(q0026==1 ~ q0030_0002, q0026==2 ~ q0040_0002, TRUE ~ NA_real_),
+                    q40_3=case_when(q0026==1 ~ q0030_0003, q0026==2 ~ q0040_0003, TRUE ~ NA_real_),
+                    q40_4=case_when(q0026==1 ~ q0030_0004, q0026==2 ~ q0040_0004, TRUE ~ NA_real_),
+                    q40_5=case_when(q0026==1 ~ q0030_0005, q0026==2 ~ q0040_0005, TRUE ~ NA_real_))
 
-ISP<-ISP %>% mutate(q62_71=case_when(q0055==2 ~ q0062,
-                                     q0055==1 ~ q0071,
-                                     TRUE ~ NA_character_))
-table(ISP$q0062)
-table(ISP$q0071)
+table(ISP$q0026,ISP$q40_1)
+# q0041
 
-# q0063
+ISP<-ISP %>% mutate(q41_1=case_when(q0026==1 ~ q0031_0001, q0026==2 ~ q0041_0001, TRUE ~ NA_real_),
+                    q41_2=case_when(q0026==1 ~ q0031_0002, q0026==2 ~ q0041_0002, TRUE ~ NA_real_),
+                    q41_3=case_when(q0026==1 ~ q0031_0003, q0026==2 ~ q0041_0003, TRUE ~ NA_real_))
 
-ISP$q0072_0001<-as.numeric(as.factor(as.numeric(ISP$q0072_0001)))
-ISP$q0072_0002<-as.numeric(as.factor(as.numeric(ISP$q0072_0002)))
+table(ISP$q0026,ISP$q41_1)
 
-ISP<-ISP %>% mutate(q63_1=case_when(q0055==2 ~ q0063_0001, q0055==1 ~ q0072_0001, TRUE ~ NA_real_),
-                    q63_2=case_when(q0055==2 ~ q0063_0002, q0055==1 ~ q0072_0002, TRUE ~ NA_real_))
+# q0042
 
-table(ISP$q63_1)
+ISP<-ISP %>% mutate(q42_1=case_when(q0026==1 ~ q0032_0001, q0026==2 ~ q0042_0001, TRUE ~ NA_real_),
+                    q42_2=case_when(q0026==1 ~ q0032_0002, q0026==2 ~ q0042_0002, TRUE ~ NA_real_),
+                    q42_3=case_when(q0026==1 ~ q0032_0003, q0026==2 ~ q0042_0003, TRUE ~ NA_real_),
+                    q42_4=case_when(q0026==1 ~ q0032_0004, q0026==2 ~ q0042_0004, TRUE ~ NA_real_),
+                    q42_5=case_when(q0026==1 ~ q0032_0005, q0026==2 ~ q0042_0005, TRUE ~ NA_real_),
+                    q42_6=case_when(q0026==1 ~ q0032_0006, q0026==2 ~ q0042_0006, TRUE ~ NA_real_),
+                    q42_7=case_when(q0026==1 ~ q0032_0007, q0026==2 ~ q0042_0007, TRUE ~ NA_real_),
+                    q42_8=case_when(q0026==1 ~ q0032_0008, q0026==2 ~ q0042_0008, TRUE ~ NA_real_))
 
-table(ISP$q0063_0001)
-table(ISP$q0072_0001)
+table(ISP$q0026,ISP$q42_1)
 
-# q0064
-ISP$q0064<-as.character(ISP$q0064)
-ISP$q0073<-as.character(ISP$q0073)
+# q0043
+ISP$q0033<-as.numeric(as.factor(as.numeric(ISP$q0033)))
+ISP$q0043<-as.numeric(as.factor(as.numeric(ISP$q0043)))
 
-ISP<-ISP %>% mutate(q64_73=case_when(q0055==2 ~ q0064,
-                                     q0055==1 ~ q0073,
-                                     TRUE ~ NA_character_))
+ISP<-ISP %>% mutate(q43=case_when(q0026==1 ~ q0033, q0026==2 ~ q0043, TRUE ~ NA_real_))
+table(ISP$q0026,ISP$q43)
+
+# q0044
+
+ISP$q0044_0001<-as.numeric(as.factor(as.numeric(ISP$q0044_0001)))
+ISP$q0044_0002<-as.numeric(as.factor(as.numeric(ISP$q0044_0002)))
+
+ISP<-ISP %>% mutate(q44_1=case_when(q0026==1 ~ q0034_0001, q0026==2 ~ q0044_0001, TRUE ~ NA_real_),
+                    q44_2=case_when(q0026==1 ~ q0034_0002, q0026==2 ~ q0044_0002, TRUE ~ NA_real_))
+
+table(ISP$q0026,ISP$q0044_0001)
+table(ISP$q0026,ISP$q44_1)
+
+# q0045
+ISP$q0035<-as.numeric(as.factor(as.numeric(ISP$q0035)))
+ISP$q0045<-as.numeric(as.factor(as.numeric(ISP$q0045)))
+
+ISP<-ISP %>% mutate(q45=case_when(q0026==1 ~ q0035, q0026==2 ~ q0045, TRUE ~ NA_real_))
+table(ISP$q0026,ISP$q45)
+
+# q0046
+
+ISP<-ISP %>% mutate(q46=case_when(q0026==1 ~ q0036, q0026==2 ~ q0046, TRUE ~ NA_real_))
+table(ISP$q0026,ISP$q0046)
+table(ISP$q0026,ISP$q46)
+
+
+# q0027
+ISP$q0027<-as.numeric(as.factor(as.numeric(ISP$q0027)))
+ISP$q0037<-as.numeric(as.factor(as.numeric(ISP$q0037)))
+
+ISP<-ISP %>% mutate(q27=case_when(q0026==1 ~ q0027, q0026==2 ~ q0037, TRUE ~ NA_real_))
+table(ISP$q0026,ISP$q27)
+table(ISP$q0026,ISP$q0027)
+
+names(ISP$q0038)
+
+
 ## Variables finales son 
-##q56_65 ##q57_1 ##q58_1 ##q59_1 ##q60_1 ##61_1 ##62_71 ##q63_1 ##q64_73
+## ##q27; q38_1; ##q39_1 ##q40_1 ##q41_1 ##q42 ##q43 ##q44_1 ##q45; q46
 
 
-## d5_mod (q0055) - Teletrabajo -----------------
-table(ISP$q0055)
-ISP$d5_mod <- as.factor(ISP$q0055)
+## d5_mod (q0026) - Teletrabajo -----------------
+table(ISP$q0026)
+ISP$d5_mod <- as.factor(ISP$q0026)
 ISP$d5_mod <- car::recode(ISP$d5_mod, recodes= c("1='Teletrabajo total';2='Teletrabajo parcial';3='Trabajo normal';NA=NA"), as.factor = T,
                           levels= c("Teletrabajo total", "Teletrabajo parcial", "Trabajo normal"))
 levels(ISP$d5_mod)
+table(ISP$d5_mod)
 
 ### E. - Condiciones de trabajo, familia y salud  ----
 ## e1 (q56_65) - personas en hogar  -----
-table(ISP$q56_65)
-ISP$e1 <- as.numeric(ISP$q56_65)
+table(ISP$q0027)
+ISP$e1 <- as.numeric(ISP$q0027)
 summary(ISP$e1)
 
-## e2 (q57) - uso herramientas (e2) -----
-## e2.1 (q57_1) - computador  -----
-table(ISP$q57_1)
-ISP$e2.1 <- as.factor(ISP$q57_1)
+## e2 (q38) - uso herramientas (e2) -----
+## e2.1 (q38_1) - computador  -----
+table(ISP$q38_1)
+ISP$e2.1 <- as.factor(ISP$q38_1)
 ISP$e2.1 <- car::recode(ISP$e2.1, recodes= c("1='Exclusivo para el trabajo';2='Compartida en el hogar';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Exclusivo para el trabajo", "Compartida en el hogar", "No la utilizo"))
-## q0057_2 - celular (e2.2) -----
-table(ISP$q57_2)
-ISP$e2.2 <- as.factor(ISP$q57_2)
+table(ISP$e2.1)
+
+## q0028_2 - celular (e2.2) -----
+table(ISP$q38_2)
+ISP$e2.2 <- as.factor(ISP$q38_2)
 ISP$e2.2 <- car::recode(ISP$e2.2, recodes= c("1='Exclusivo para el trabajo';2='Compartida en el hogar';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Exclusivo para el trabajo", "Compartida en el hogar", "No la utilizo"))
-## q0057_3 - conexion internet (e2.3) -----
-table(ISP$q57_3)
-ISP$e2.3 <- as.factor(ISP$q57_3)
+
+table(ISP$e2.2)
+
+## q0028_3 - conexion internet (e2.3) -----
+table(ISP$q38_3)
+ISP$e2.3 <- as.factor(ISP$q38_3)
 ISP$e2.3 <- car::recode(ISP$e2.3, recodes= c("1='Exclusivo para el trabajo';2='Compartida en el hogar';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Exclusivo para el trabajo", "Compartida en el hogar", "No la utilizo"))
-## q0057_4 - escritorio mesa (e2.4) -----
-table(ISP$q57_4)
-ISP$e2.4 <- as.factor(ISP$q57_4)
+table(ISP$e2.3)
+
+## q0028_4 - escritorio mesa (e2.4) -----
+table(ISP$q38_4)
+ISP$e2.4 <- as.factor(ISP$q38_4)
 ISP$e2.4 <- car::recode(ISP$e2.4, recodes= c("1='Exclusivo para el trabajo';2='Compartida en el hogar';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Exclusivo para el trabajo", "Compartida en el hogar", "No la utilizo"))
-## q0058 - propiedad herramientas (e3) -----
-## q0058_1 - computador (e3.1) -----
-table(ISP$q58_1)
-ISP$e3.1 <- as.factor(ISP$q58_1)
+
+table(ISP$e2.4)
+
+
+## q0029 - propiedad herramientas (e3) -----
+## q0029_1 - computador (e3.1) -----
+table(ISP$q39_1)
+ISP$e3.1 <- as.factor(ISP$q39_1)
 ISP$e3.1 <- car::recode(ISP$e3.1, recodes= c("1='Servicio';2='Propias';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Servicio", "Propias", "No la utilizo"))
-## q0058_2 - celular (e3.2) -----
-table(ISP$q58_2)
-ISP$e3.2 <- as.factor(ISP$q58_2)
+table(ISP$e3.1)
+
+## q0029_2 - celular (e3.2) -----
+table(ISP$q39_2)
+ISP$e3.2 <- as.factor(ISP$q39_2)
 ISP$e3.2 <- car::recode(ISP$e3.2, recodes= c("1='Servicio';2='Propias';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Servicio", "Propias", "No la utilizo"))
-## q0058_3 - conexion internet (e3.3) -----
-table(ISP$q58_3)
-ISP$e3.3 <- as.factor(ISP$q58_3)
+table(ISP$e3.2)
+
+## q0029_3 - conexion internet (e3.3) -----
+table(ISP$q39_3)
+ISP$e3.3 <- as.factor(ISP$q39_3)
 ISP$e3.3 <- car::recode(ISP$e3.3, recodes= c("1='Servicio';2='Propias';3='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Servicio", "Propias", "No la utilizo"))
 
-## q0059 - calidad herramientas (e4) -----
-## q0059_1 - computador (e4.1) -----
-table(ISP$q59_1)
-ISP$e4.1 <- as.factor(ISP$q59_1)
+table(ISP$e3.3)
+
+## q0030 - calidad herramientas (e4) -----
+## q0030_1 - computador (e4.1) -----
+table(ISP$q40_1)
+ISP$e4.1 <- as.factor(ISP$q40_1)
 ISP$e4.1 <- car::recode(ISP$e4.1, recodes= c("1='Muy mala';2='Mala';3='Regular';4='Buena'; 5='Muy buena';6='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Muy mala", "Mala","Regular","Buena","Muy buena", "No la utilizo"))
-## q0059_2 - celular (e4.2) -----
-table(ISP$q59_2)
-ISP$e4.2 <- as.factor(ISP$q59_2)
+table(ISP$e4.1)
+
+## q0030_2 - celular (e4.2) -----
+table(ISP$q40_2)
+ISP$e4.2 <- as.factor(ISP$q40_2)
 ISP$e4.2 <- car::recode(ISP$e4.2, recodes= c("1='Muy mala';2='Mala';3='Regular';4='Buena'; 5='Muy buena';6='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Muy mala", "Mala","Regular","Buena","Muy buena", "No la utilizo"))
-## q0059_3 - conexion internet (e4.3) -----
-table(ISP$q59_3)
-ISP$e4.3 <- as.factor(ISP$q59_3)
+table(ISP$e4.2)
+## q0030_3 - conexion internet (e4.3) -----
+table(ISP$q40_3)
+ISP$e4.3 <- as.factor(ISP$q40_3)
 ISP$e4.3 <- car::recode(ISP$e4.3, recodes= c("1='Muy mala';2='Mala';3='Regular';4='Buena'; 5='Muy buena';6='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Muy mala", "Mala","Regular","Buena","Muy buena", "No la utilizo"))
-## q0059_4 - silla (e4.4) -----
-table(ISP$q59_4)
-ISP$e4.4 <- as.factor(ISP$q59_4)
+table(ISP$e4.3)
+## q0030_4 - silla (e4.4) -----
+table(ISP$q40_4)
+ISP$e4.4 <- as.factor(ISP$q40_4)
 ISP$e4.4 <- car::recode(ISP$e4.4, recodes= c("1='Muy mala';2='Mala';3='Regular';4='Buena'; 5='Muy buena';6='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Muy mala", "Mala","Regular","Buena","Muy buena", "No la utilizo"))
-## q0059_5 - escritorio mesa (e4.5) -----
-table(ISP$q59_5)
-ISP$e4.5 <- as.factor(ISP$q59_5)
+table(ISP$e4.4)
+## q0030_5 - escritorio mesa (e4.5) -----
+table(ISP$q40_5)
+ISP$e4.5 <- as.factor(ISP$q40_5)
 ISP$e4.5 <- car::recode(ISP$e4.5, recodes= c("1='Muy mala';2='Mala';3='Regular';4='Buena'; 5='Muy buena';6='No la utilizo';NA=NA"), as.factor = T,
                         levels= c("Muy mala", "Mala","Regular","Buena","Muy buena", "No la utilizo"))
+table(ISP$e4.5)
 
-## q0060 - protocolos (e5) -----
-## q0060_1 - organizar trabajo (e5.1) -----
-table(ISP$q60_1)
-ISP$e5.1 <- as.factor(ISP$q60_1)
+## q0031 - protocolos (e5) -----
+## q0031_1 - organizar trabajo (e5.1) -----
+table(ISP$q41_1)
+ISP$e5.1 <- as.factor(ISP$q41_1)
 ISP$e5.1 <- car::recode(ISP$e5.1, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
                         levels= c("Si", "No"))
-## q0060_2 - seguridad e higiene (e5.2) -----
-table(ISP$q60_2)
-ISP$e5.2 <- as.factor(ISP$q60_2)
+table(ISP$e5.1)
+## q0031_2 - seguridad e higiene (e5.2) -----
+table(ISP$q41_2)
+ISP$e5.2 <- as.factor(ISP$q41_2)
 ISP$e5.2 <- car::recode(ISP$e5.2, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
                         levels= c("Si", "No"))
-## q0060_3 - accidentes (e5.3) -----
-table(ISP$q60_3)
-ISP$e5.3 <- as.factor(ISP$q60_3)
+
+table(ISP$e5.2)
+
+## q0031_3 - accidentes (e5.3) -----
+table(ISP$q41_3)
+ISP$e5.3 <- as.factor(ISP$q41_3)
 ISP$e5.3 <- car::recode(ISP$e5.3, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
                         levels= c("Si", "No"))
-## q0061 - plataformas (e6.1)------
-table(ISP$q61_8, ISP$d5_mod)
+table(ISP$e5.3)
 
-## q0061_1 - teams (e6.1_teams) -----
-table(ISP$q61_1)
-ISP$e6.1_teams <- as.factor(ISP$q61_1)
+## Plataformas ------------------
+## q0032 - plataformas (e6.1)------
+table(ISP$q42_8, ISP$d5_mod)
+
+## q0032_1 - teams (e6.1_teams) -----
+table(ISP$q42_1, useNA = "ifany")
+ISP$e6.1_teams <- as.factor(ISP$q42_1)
 ISP$e6.1_teams <- car::recode(ISP$e6.1_teams, recodes= c("1='Si';NA='No'"), as.factor = T,
                               levels= c("Si", "No"))
-## q0061_2 - zoom (e6.1_zoom) -----
-table(ISP$q61_2)
-ISP$e6.1_zoom <- as.factor(ISP$q61_2)
+table(ISP$e6.1_teams)
+
+## q0032_2 - zoom (e6.1_zoom) -----
+table(ISP$q42_2)
+ISP$e6.1_zoom <- as.factor(ISP$q42_2)
 ISP$e6.1_zoom <- car::recode(ISP$e6.1_zoom, recodes= c("1='Si';NA='No'"), as.factor = T,
                              levels= c("Si", "No"))
-## q0061_3 - meet (e6.1_meet) -----
-table(ISP$q61_3)
-ISP$e6.1_meet <- as.factor(ISP$q61_3)
+table(ISP$e6.1_zoom)
+
+## q0032_3 - meet (e6.1_meet) -----
+table(ISP$q42_3)
+ISP$e6.1_meet <- as.factor(ISP$q42_3)
 ISP$e6.1_meet <- car::recode(ISP$e6.1_meet, recodes= c("1='Si';NA='No'"), as.factor = T,
                              levels= c("Si", "No"))
-## q0061_4 - intranet (e6.1_intranet) -----
-table(ISP$q61_4)
-ISP$e6.1_intranet <- as.factor(ISP$q61_4)
+## q0032_4 - intranet (e6.1_intranet) -----
+table(ISP$q42_4)
+ISP$e6.1_intranet <- as.factor(ISP$q42_4)
 ISP$e6.1_intranet <- car::recode(ISP$e6.1_intranet, recodes= c("1='Si';NA='No'"), as.factor = T,
                                  levels= c("Si", "No"))
-## q0061_5 - whats app (e6.1_whatsapp) -----
-table(ISP$q61_5)
-ISP$e6.1_whatsapp <- as.factor(ISP$q61_5)
+## q0032_5 - whats app (e6.1_whatsapp) -----
+table(ISP$q42_5)
+ISP$e6.1_whatsapp <- as.factor(ISP$q42_5)
 ISP$e6.1_whatsapp <- car::recode(ISP$e6.1_whatsapp, recodes= c("1='Si';NA='No'"), as.factor = T,
                                  levels= c("Si", "No"))
-## q0061_6 - yammer (e6.1_yammer) -----
-table(ISP$q61_6)
-ISP$e6.1_yammer <- as.factor(ISP$q61_6)
+## q0032_6 - yammer (e6.1_yammer) -----
+table(ISP$q42_6)
+ISP$e6.1_yammer <- as.factor(ISP$q42_6)
 ISP$e6.1_yammer <- car::recode(ISP$e6.1_yammer, recodes= c("1='Si';NA='No'"), as.factor = T,
                                levels= c("Si", "No"))
-## q0061_7 - duo (e6.1_duo) -----
-table(ISP$q61_7)
-ISP$e6.1_duo <- as.factor(ISP$q61_7)
+table(ISP$e6.1_yammer)
+
+## q0032_7 - duo (e6.1_duo) -----
+table(ISP$q42_7)
+ISP$e6.1_duo <- as.factor(ISP$q42_7)
 ISP$e6.1_duo <- car::recode(ISP$e6.1_duo, recodes= c("1='Si';NA='No'"), as.factor = T,
                             levels= c("Si", "No"))
-## q0061_8 - otro (e6.1_otro) -----
-table(ISP$q61_8)
-ISP$e6.1_otro <- as.factor(ISP$q61_8)
+## q0032_8 - otro (e6.1_otro) -----
+table(ISP$q42_8)
+ISP$e6.1_otro <- as.factor(ISP$q42_8)
 ISP$e6.1_otro <- car::recode(ISP$e6.1_otro, recodes= c("1='Si';NA='No'"), as.factor = T,
                              levels= c("Si", "No"))
 table(ISP$e6.1_otro)
-## q62_71 - tiempo plataforma (e6.2)
-ISP$e6.2<-as.numeric(ISP$q62_71)
+## q43_71 - tiempo plataforma (e6.2)
+table(ISP$q43)
+ISP$e6.2<-as.numeric(ISP$q43)
 summary(ISP$e6.2)
 
-## e6.3 (q0063) - problemas  -----
-## q63_1 - vpn  (e6.3_vpn)----
-table(ISP$q63_1)
-ISP$e6.3_vpn <- as.factor(ISP$q63_1)
+## e6.3 (q0034) - problemas  -----
+## q44_1 - vpn  (e6.3_vpn)----
+table(ISP$q44_1)
+ISP$e6.3_vpn <- as.factor(ISP$q44_1)
 ISP$e6.3_vpn <- car::recode(ISP$e6.3_vpn, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
                             levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
 
-## q63_2 - desconexion  (e6.3_desc)----
-table(ISP$q63_2)
-ISP$e6.3_desc <- as.factor(ISP$q63_2)
+table(ISP$e6.3_vpn)
+
+## q44_2 - desconexion  (e6.3_desc)----
+table(ISP$q44_2)
+ISP$e6.3_desc <- as.factor(ISP$q44_2)
 ISP$e6.3_desc <- car::recode(ISP$e6.3_desc, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
                              levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
 
-##q64_73 - lugar de trabajo -------
-table(ISP$q64_73)
-ISP$e7 <- as.factor(ISP$q64_73)
-ISP$e7 <- car::recode(ISP$e7, recodes= c("1='Espacio individual';2='Espacio compartido'"), as.factor = T,
-                      levels= c("Espacio individual", "Espacio compartido"))
+table(ISP$e6.3_desc)
+
+##q45 - En un día de trabajo, ¿cuántas horas contínuas puede dedicarle sin interrupciones? -------
+table(ISP$q45)
+ISP$e6.4<-as.numeric(ISP$q45)
+summary(ISP$e6.4)
 
 ## F. Condiciones de trabajo habitual (normales y teleparcial) ---------------
 
