@@ -19,6 +19,7 @@ table(ISP$CollectorNm, useNA = "ifany")
 table(ISP$respondent_id, useNA = "ifany")
 str(ISP$respondent_id)
 
+
 # "collector_id"
 table(ISP$collector_id, useNA = "ifany")
 #Se eliminara
@@ -54,7 +55,6 @@ ISP <- ISP %>% select(- c(custom_1, last_name, first_name, email_address, collec
 # Transformar vectores
 sapply(ISP, class) # Ver tipo
 ISP[1] <- sapply(ISP[1],as.numeric) # id a numerica
-#ISP$date_created <- as.Date(ISP$date_created) - revisar
 
 ## A. Modulo Sociodemograficas ----
 # a0_pais ("q0001") - Pais----
@@ -331,7 +331,7 @@ table(ISP$q0026,ISP$q46)
 ISP$q0027<-as.numeric(as.factor(as.numeric(ISP$q0027)))
 ISP$q0037<-as.numeric(as.factor(as.numeric(ISP$q0037)))
 
-ISP<-ISP %>% mutate(q27=case_when(q0026==1 ~ q0027, q0026==2 ~ q0037, TRUE ~ NA_real_))
+ISP<-ISP %>% mutate(q27=case_when(q0026==1 ~ q0027, q0026==2 ~ q0036, TRUE ~ NA_real_))
 table(ISP$q0026,ISP$q27)
 table(ISP$q0026,ISP$q0027)
 
@@ -351,9 +351,9 @@ levels(ISP$d5_mod)
 table(ISP$d5_mod)
 
 ### E. - Condiciones de trabajo, familia y salud  ----
-## e1 (q56_65) - personas en hogar  -----
-table(ISP$q0027)
-ISP$e1 <- as.numeric(ISP$q0027)
+## e1 (q27) - personas en hogar  -----
+table(ISP$q27)
+ISP$e1 <- as.numeric(ISP$q27)
 summary(ISP$e1)
 
 ## e2 (q38) - uso herramientas (e2) -----
@@ -544,332 +544,677 @@ table(ISP$q45)
 ISP$e6.4<-as.numeric(ISP$q45)
 summary(ISP$e6.4)
 
+# 46 (e7) -------
+table(ISP$q46)
+ISP$e7 <- as.factor(ISP$q46)
+ISP$e7 <- car::recode(ISP$e7, recodes= c("1='Espacio individual'; 2= 'Espacio compartido';NA='No'"), as.factor = T,
+                             levels= c("Espacio individual", "Espacio compartido"))
+table(ISP$e7)
+
+
 ## F. Condiciones de trabajo habitual (normales y teleparcial) ---------------
 
-## F1 (q0074) - medidas prevencion  ----
-table(ISP$q0074_0008, ISP$d5_mod)
+## Merge questionaries
+# q0042
 
-## q0074_1  (f1.1) -----
-table(ISP$q0074_0001)
-ISP$f1.1 <- as.factor(ISP$q0074_0001)
+ISP<-ISP %>% mutate(q0047_0001=case_when(q0026==2   ~ q0047_0001, q0026==3 ~ q0050_0001, TRUE ~ NA_real_),
+                    q0047_0002=case_when(q0026==2 ~ q0047_0002, q0026==3 ~ q0050_0002, TRUE ~ NA_real_),
+                    q0047_0002=case_when(q0026==2 ~ q0047_0003, q0026==3 ~ q0050_0003, TRUE ~ NA_real_),
+                    q0047_0004=case_when(q0026==2 ~ q0047_0004, q0026==3 ~ q0050_0004, TRUE ~ NA_real_),
+                    q0047_0005=case_when(q0026==2 ~ q0047_0005, q0026==3 ~ q0050_0005, TRUE ~ NA_real_),
+                    q0047_0006=case_when(q0026==2 ~ q0047_0006, q0026==3 ~ q0050_0006, TRUE ~ NA_real_),
+                    q0047_0007=case_when(q0026==2 ~ q0047_0007, q0026==3 ~ q0050_0007, TRUE ~ NA_real_),
+                    q0047_0008=case_when(q0026==2 ~ q0047_0008, q0026==3 ~ q0050_0008, TRUE ~ NA_real_),
+                    q0047_0009=case_when(q0026==2 ~ q0047_0009, q0026==3 ~ q0050_0009, TRUE ~ NA_real_),
+                    q0047_0010=case_when(q0026==2 ~ q0047_0010, q0026==3 ~ q0050_0010, TRUE ~ NA_real_),
+                    q0047_0011=case_when(q0026==2 ~ q0047_0011, q0026==3 ~ q0050_0011, TRUE ~ NA_real_),
+                    q0047_0012=case_when(q0026==2 ~ q0047_0012, q0026==3 ~ q0050_0012, TRUE ~ NA_real_),
+                    q0047_0013=case_when(q0026==2 ~ q0047_0013, q0026==3 ~ q0050_0013, TRUE ~ NA_real_),
+                    q0047_0014=case_when(q0026==2 ~ q0047_0014, q0026==3 ~ q0050_0014, TRUE ~ NA_real_),
+                    q0047_0015=case_when(q0026==2 ~ q0047_0015, q0026==3 ~ q0050_0015, TRUE ~ NA_real_))
+
+table(ISP$q0047_0010, ISP$q0026)
+
+
+## F1 (q0047) - medidas prevencion  ----
+table(ISP$q0047_0001, ISP$d5_mod)
+
+## q0047_1  (f1.1) -----
+table(ISP$q0047_0001)
+ISP$f1.1 <- as.factor(ISP$q0047_0001)
 ISP$f1.1 <- car::recode(ISP$f1.1, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
 table(ISP$f1.1)
-## q0074_2 -  (f1.2) -----
-table(ISP$q0074_0002)
-ISP$f1.2 <- as.factor(ISP$q0074_0002)
+## q0047_2 -  (f1.2) -----
+table(ISP$q0047_0002)
+ISP$f1.2 <- as.factor(ISP$q0047_0002)
 ISP$f1.2 <- car::recode(ISP$f1.2, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_3 - (f1.3) -----
-table(ISP$q0074_0003)
-ISP$f1.3 <- as.factor(ISP$q0074_0003)
+## q0047_3 - (f1.3) -----
+table(ISP$q0047_0003)
+ISP$f1.3 <- as.factor(ISP$q0047_0003)
 ISP$f1.3 <- car::recode(ISP$f1.3, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_4 - (f1.4) -----
-table(ISP$q0074_0004)
-ISP$f1.4 <- as.factor(ISP$q0074_0004)
+## q0047_4 - (f1.4) -----
+table(ISP$q0047_0004)
+ISP$f1.4 <- as.factor(ISP$q0047_0004)
 ISP$f1.4 <- car::recode(ISP$f1.4, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_5 - (f1.5) -----
-table(ISP$q0074_0005)
-ISP$f1.5 <- as.factor(ISP$q0074_0005)
+## q0047_5 - (f1.5) -----
+table(ISP$q0047_0005)
+ISP$f1.5 <- as.factor(ISP$q0047_0005)
 ISP$f1.5 <- car::recode(ISP$f1.5, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_6 - (f1.6) -----
-table(ISP$q0074_0006)
-ISP$f1.6 <- as.factor(ISP$q0074_0006)
+table(ISP$f1.5)
+## q0047_6 - (f1.6) -----
+table(ISP$q0047_0006)
+ISP$f1.6 <- as.factor(ISP$q0047_0006)
 ISP$f1.6 <- car::recode(ISP$f1.6, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_7 - (f1.7) -----
-table(ISP$q0074_0007)
-ISP$f1.7 <- as.factor(ISP$q0074_0007)
+## q0047_7 - (f1.7) -----
+table(ISP$q0047_0007)
+ISP$f1.7 <- as.factor(ISP$q0047_0007)
 ISP$f1.7 <- car::recode(ISP$f1.7, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_8 - (f1.8) -----
-table(ISP$q0074_0008)
-ISP$f1.8 <- as.factor(ISP$q0074_0008)
+## q0047_8 - (f1.8) -----
+table(ISP$q0047_0008)
+ISP$f1.8 <- as.factor(ISP$q0047_0008)
 ISP$f1.8 <- car::recode(ISP$f1.8, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_9 - (f1.9) -----
-table(ISP$q0074_0009)
-ISP$f1.9 <- as.factor(ISP$q0074_0009)
+## q0047_9 - (f1.9) -----
+table(ISP$q0047_0009)
+ISP$f1.9 <- as.factor(ISP$q0047_0009)
 ISP$f1.9 <- car::recode(ISP$f1.9, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                         levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_10 - (f1.10) -----
-table(ISP$q0074_0010)
-ISP$f1.10 <- as.factor(ISP$q0074_0010)
+## q0047_10 - (f1.10) -----
+table(ISP$q0047_0010)
+ISP$f1.10 <- as.factor(ISP$q0047_0010)
 ISP$f1.10 <- car::recode(ISP$f1.10, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_11 - (f1.11) -----
-table(ISP$q0074_0011)
-ISP$f1.11 <- as.factor(ISP$q0074_0011)
+## q0047_11 - (f1.11) -----
+table(ISP$q0047_0011)
+ISP$f1.11 <- as.factor(ISP$q0047_0011)
 ISP$f1.11 <- car::recode(ISP$f1.11, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_12 - (f1.12) -----
-table(ISP$q0074_0012)
-ISP$f1.12 <- as.factor(ISP$q0074_0012)
+## q0047_12 - (f1.12) -----
+table(ISP$q0047_0012)
+ISP$f1.12 <- as.factor(ISP$q0047_0012)
 ISP$f1.12 <- car::recode(ISP$f1.12, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_13 - (f1.13) -----
-table(ISP$q0074_0013)
-ISP$f1.13 <- as.factor(ISP$q0074_0013)
+## q0047_13 - (f1.13) -----
+table(ISP$q0047_0013)
+ISP$f1.13 <- as.factor(ISP$q0047_0013)
 ISP$f1.13 <- car::recode(ISP$f1.13, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_14 - (f1.14) -----
-table(ISP$q0074_0014)
-ISP$f1.14 <- as.factor(ISP$q0074_0014)
+## q0047_14 - (f1.14) -----
+table(ISP$q0047_0014)
+ISP$f1.14 <- as.factor(ISP$q0047_0014)
 ISP$f1.14 <- car::recode(ISP$f1.14, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
-## q0074_15 - (f1.15) -----
-table(ISP$q0074_0015)
-ISP$f1.15 <- as.factor(ISP$q0074_0015)
+## q0047_15 - (f1.15) -----
+table(ISP$q0047_0015)
+ISP$f1.15 <- as.factor(ISP$q0047_0015)
 ISP$f1.15 <- car::recode(ISP$f1.15, recodes= c("1='Si, adecuadamente';2='Si, parcialmente';3='No se ha implementado'; NA=NA"), as.factor = T,
                          levels= c("Si, adecuadamente", "Si, parcialmente", "No se ha implementado"))
 
-## F2 (q0075) - Daños  (corregir) ----
-table(ISP$q0075_0003, ISP$d5_mod)
+## F2 (q0048) - Daños  (corregir) ----
+table(ISP$q0048_0003, ISP$d5_mod)
 
-## q0075_1  (f2.1) -----
-table(ISP$q0075_0001)
-ISP$f2.1 <- as.factor(ISP$q0075_0001)
-ISP$f2.1 <- car::recode(ISP$f2.1, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
-                        levels= c("Si", "No"))
+ISP<-ISP %>% mutate(q0048_0001=case_when(q0026==2   ~ q0048_0001, q0026==3 ~ q0051_0001, TRUE ~ NA_real_),
+                    q0048_0002=case_when(q0026==2 ~ q0048_0002, q0026==3 ~ q0051_0002, TRUE ~ NA_real_),
+                    q0048_0002=case_when(q0026==2 ~ q0048_0003, q0026==3 ~ q0051_0003, TRUE ~ NA_real_),
+                    q0048_0004=case_when(q0026==2 ~ q0048_0004, q0026==3 ~ q0051_0004, TRUE ~ NA_real_),
+                    q0048_0005=case_when(q0026==2 ~ q0048_0005, q0026==3 ~ q0051_0005, TRUE ~ NA_real_),
+                    q0048_0006=case_when(q0026==2 ~ q0048_0006, q0026==3 ~ q0051_0006, TRUE ~ NA_real_),
+                    q0048_0007=case_when(q0026==2 ~ q0048_0007, q0026==3 ~ q0051_0007, TRUE ~ NA_real_))
+
+table(ISP$q0048_0007, ISP$q0026)
+
+
+## q0048_1  (f2.1) -----
+table(ISP$q0048_0001)
+ISP$f2.1 <- as.factor(ISP$q0048_0001)
+ISP$f2.1 <- car::recode(ISP$f2.1, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
 table(ISP$f2.1)
-## q0075_2 -  (f2.2) -----
-table(ISP$q0075_0002)
-ISP$f2.2 <- as.factor(ISP$q0075_0002)
-ISP$f2.2 <- car::recode(ISP$f2.2, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
-                        levels= c("Si", "No"))
+## q0048_2 -  (f2.2) -----
+table(ISP$q0048_0002)
+ISP$f2.2 <- as.factor(ISP$q0048_0002)
+ISP$f2.2 <- car::recode(ISP$f2.2, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
 table(ISP$f2.2)
-## q0075_3 - (f2.3) -----
-table(ISP$q0075_0003)
-ISP$f2.3 <- as.factor(ISP$q0075_0003)
-ISP$f2.3 <- car::recode(ISP$f2.3, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
+## q0048_3 - (f2.3) -----
+table(ISP$q0048_0003)
+ISP$f2.3 <- as.factor(ISP$q0048_0003)
+ISP$f2.3 <- car::recode(ISP$f2.3, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+## q0048_4 - (f2.4) -----
+table(ISP$q0048_0004)
+ISP$f2.4 <- as.factor(ISP$q0048_0004)
+ISP$f2.4 <- car::recode(ISP$f2.4, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+
+## q0048_5 - (f2.5) -----
+table(ISP$q0048_0005)
+ISP$f2.5 <- as.factor(ISP$q0048_0005)
+ISP$f2.5 <- car::recode(ISP$f2.5, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+
+table(ISP$f2.5)
+## q0048_6 - (f2.6) -----
+table(ISP$q0048_0006)
+ISP$f2.6 <- as.factor(ISP$q0048_0006)
+ISP$f2.6 <- car::recode(ISP$f2.6, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+
+table(ISP$f2.6)
+## q0048_7 - (f2.7) -----
+table(ISP$q0048_0007)
+ISP$f2.7 <- as.factor(ISP$q0048_0007)
+ISP$f2.7 <- car::recode(ISP$f2.7, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
+                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+
+
+## F3 (q0049) - incumplimientos  ----
+table(ISP$q0049_0005, ISP$d5_mod)
+
+ISP<-ISP %>% mutate(q0049_0001=case_when(q0026==2 ~ q0049_0001, q0026==3 ~ q0052_0001, TRUE ~ NA_real_),
+                    q0049_0002=case_when(q0026==2 ~ q0049_0002, q0026==3 ~ q0052_0002, TRUE ~ NA_real_),
+                    q0049_0002=case_when(q0026==2 ~ q0049_0003, q0026==3 ~ q0052_0003, TRUE ~ NA_real_),
+                    q0049_0004=case_when(q0026==2 ~ q0049_0004, q0026==3 ~ q0052_0004, TRUE ~ NA_real_),
+                    q0049_0005=case_when(q0026==2 ~ q0049_0005, q0026==3 ~ q0052_0005, TRUE ~ NA_real_))
+
+table(ISP$q0048_0007, ISP$q0026)
+
+## q0049_1  (f3.1) -----
+table(ISP$q0049_0001)
+ISP$f3.1 <- as.factor(ISP$q0049_0001)
+ISP$f3.1 <- car::recode(ISP$f3.1, recodes= c("1='Si';NA='No'"), as.factor = T,
                         levels= c("Si", "No"))
-## q0075_4 - (f2.4) -----
-table(ISP$q0075_0004)
-ISP$f2.4 <- as.factor(ISP$q0075_0004)
-ISP$f2.4 <- car::recode(ISP$f2.4, recodes= c("1='Si';2='No';NA=NA"), as.factor = T,
+
+table(ISP$q0049_0001)
+table(ISP$f3.1)
+
+## q0049_2 -  (f3.2) -----
+table(ISP$q0049_0002)
+ISP$f3.2 <- as.factor(ISP$q0049_0002)
+ISP$f3.2 <- car::recode(ISP$f3.2, recodes= c("1='Si';NA='No'"), as.factor = T,
                         levels= c("Si", "No"))
 
-## F3 (q0076) - incumplimientos  ----
-table(ISP$q0076_0006, ISP$d5_mod)
+## q0049_3 - (f3.3) -----
+table(ISP$q0049_0003)
+ISP$f3.3 <- as.factor(ISP$q0049_0003)
+ISP$f3.3 <- car::recode(ISP$f3.3, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+## q0049_4 - (f3.4) -----
+table(ISP$q0049_0004)
+ISP$f3.4 <- as.factor(ISP$q0049_0004)
+ISP$f3.4 <- car::recode(ISP$f3.4, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
 
-## q0076_1  (f3.1) -----
-table(ISP$q0076_0001)
-ISP$f3.1 <- as.factor(ISP$q0076_0001)
-ISP$f3.1 <- car::recode(ISP$f3.1, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0076_2 -  (f3.2) -----
-table(ISP$q0076_0002)
-ISP$f3.2 <- as.factor(ISP$q0076_0002)
-ISP$f3.2 <- car::recode(ISP$f3.2, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+## q0049_5 - (f3.5) -----
+table(ISP$q0049_0005)
+ISP$f3.5 <- as.factor(ISP$q0049_0005)
+ISP$f3.5 <- car::recode(ISP$f3.5, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
 
-## q0076_3 - (f3.3) -----
-table(ISP$q0076_0003)
-ISP$f3.3 <- as.factor(ISP$q0076_0003)
-ISP$f3.3 <- car::recode(ISP$f3.3, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0076_4 - (f3.4) -----
-table(ISP$q0076_0004)
-ISP$f3.4 <- as.factor(ISP$q0076_0004)
-ISP$f3.4 <- car::recode(ISP$f3.4, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0076_5 - (f3.5) -----
-table(ISP$q0076_0005)
-ISP$f3.5 <- as.factor(ISP$q0076_0005)
-ISP$f3.5 <- car::recode(ISP$f3.5, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0076_6 - (f3.6) -----
-table(ISP$q0076_0006)
-ISP$f3.6 <- as.factor(ISP$q0076_0006)
-ISP$f3.6 <- car::recode(ISP$f3.6, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+
+table(ISP$q0049_0005)
 
 ## G. Trabajo de Cuidados/Familia/Conflictos -----------------
 
-## G1 (q0077) - tarea domestica (g1) -----
-table(ISP$q0077, ISP$d5_mod)
-ISP$g1 <- as.factor(ISP$q0077)
-ISP$g1 <- car::recode(ISP$g1, recodes= c("1='Soy la/el principal responsable y hago la mayor parte de las tareas del hogar';2='Hago más o menos la mitad de las tareas del hogar';3='Hago más o menos la cuarta parte de las tareas del hogar';4='Solo hago tareas puntuales';5='No hago ninguna o casi ninguna de estas tareas';NA=NA"), as.factor = T,
+## G1 (q0077) - permisos y cuidados tarea domestica (g1) -----
+table(ISP$q0053, ISP$d5_mod)
+ISP$g1 <- as.factor(ISP$q0053)
+ISP$g1 <- car::recode(ISP$g1, recodes= c("1='Si'; 2='No'"), as.factor = T,
+                      levels = c("Si", "No"))
+levels(ISP$g1)
+table(ISP$g1)
+## G2 (q0077) - tarea domestica (g1) -----
+table(ISP$q0054, ISP$d5_mod)
+ISP$g2 <- as.factor(ISP$q0054)
+ISP$g2 <- car::recode(ISP$g2, recodes= c("1='Soy la/el principal responsable y hago la mayor parte de las tareas del hogar';2='Hago más o menos la mitad de las tareas del hogar';3='Hago más o menos la cuarta parte de las tareas del hogar';4='Solo hago tareas puntuales';5='No hago ninguna o casi ninguna de estas tareas';NA=NA"), as.factor = T,
                       levels= c("Soy la/el principal responsable y hago la mayor parte de las tareas del hogar",
                                 "Hago más o menos la mitad de las tareas del hogar",
                                 "Hago más o menos la cuarta parte de las tareas del hogar",
                                 "Solo hago tareas puntuales",
                                 "No hago ninguna o casi ninguna de estas tareas"))
-levels(ISP$g1)
+levels(ISP$g2)
+table(ISP$g2)
 
-##G2 (q0078) - limite trabajo (g2)------
-## q0078_1 - (g2.1)----
-table(ISP$q0078_0001)
-ISP$g2.1 <- as.factor(ISP$q0078_0001)
-ISP$g2.1 <- car::recode(ISP$g2.1, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
-
-## q0078_2 - (g2.2)----
-table(ISP$q0078_0002)
-ISP$g2.2 <- as.factor(ISP$q0078_0002)
-ISP$g2.2 <- car::recode(ISP$g2.2, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
-## q0078_3 - (g2.3)----
-table(ISP$q0078_0003)
-ISP$g2.3 <- as.factor(ISP$q0078_0003)
-ISP$g2.3 <- car::recode(ISP$g2.3, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
-## q0078_4 - (g2.4)----
-table(ISP$q0078_0004)
-ISP$g2.4 <- as.factor(ISP$q0078_0004)
-ISP$g2.4 <- car::recode(ISP$g2.4, recodes= c("1= 'No aplica';2='Nunca';3='Rara vez';4='Algunas veces';5='Casi siempre';6='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre", "No aplica"))
-
-##G3 (q0079) - limite trabajo (g3)------
-## q0079_1 - (g3.1)----
-table(ISP$q0079_0001)
-ISP$g3.1 <- as.factor(ISP$q0079_0001)
-ISP$g3.1 <- car::recode(ISP$g3.1, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-
-## q0079_2 - (g3.2)----
-table(ISP$q0079_0002)
-ISP$g3.2 <- as.factor(ISP$q0079_0002)
-ISP$g3.2 <- car::recode(ISP$g3.2, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-
-## q0079_3 - (g3.3)----
-table(ISP$q0079_0003)
-ISP$g3.3 <- as.factor(ISP$q0079_0003)
-ISP$g3.3 <- car::recode(ISP$g3.3, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0079_4 - (g3.4)----
-table(ISP$q0079_0004)
-ISP$g3.4 <- as.factor(ISP$q0079_0004)
-ISP$g3.4 <- car::recode(ISP$g3.4, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
-## q0079_4 - (g3.5)----
-table(ISP$q0079_0005)
-ISP$g3.5 <- as.factor(ISP$q0079_0005)
-ISP$g3.5 <- car::recode(ISP$g3.5, recodes= c("1='Nunca';2='Rara vez';3='Algunas veces';4='Casi siempre';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Rara vez", "Algunas veces", "Casi siempre", "Siempre"))
+## G3 - Tiempo de trabajo
+ISP$g3.1 <- as.numeric(ISP$q0055)
+ISP$g3.2 <- as.numeric(ISP$q0056)
+summary(ISP$g3.1)
+summary(ISP$g3.2)
 
 
-## G4 (q0080) - velocidad ----
-table(ISP$q0080_0001)
-ISP$g4 <- as.factor(ISP$q0080_0001)
-ISP$g4 <- car::recode(ISP$g4, recodes= c("1='Disminuyo';2='Sigue igual';3='Aumento';NA=NA"), as.factor = T,
-                      levels= c("Disminuyo", "Sigue igual", "Aumento"))
+#G4 - tareas de cuidados ----
+##q0057 g4.1 --
+table(ISP$q0057_0001)
+ISP$g4.1 <- as.factor(ISP$q0057_0001)
+ISP$g4.1 <- car::recode(ISP$g4.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
 
+
+table(ISP$g4.1)
+
+##q0057 g4.2 --
+table(ISP$q0057_0002)
+ISP$g4.2 <- as.factor(ISP$q0057_0002)
+ISP$g4.2 <- car::recode(ISP$g4.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+
+table(ISP$g4.2)
+
+##q0057 g4.3 --
+table(ISP$q0057_0003)
+ISP$g4.3 <- as.factor(ISP$q0057_0003)
+ISP$g4.3 <- car::recode(ISP$g4.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+
+table(ISP$g4.3)
+
+##q0057 g4.4 --
+table(ISP$q0057_0004)
+ISP$g4.4 <- as.factor(ISP$q0057_0004)
+ISP$g4.4 <- car::recode(ISP$g4.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+
+table(ISP$g4.4)
+
+##q0057 g4.5 --
+table(ISP$q0057_0005)
+ISP$g4.5 <- as.factor(ISP$q0057_0005)
+ISP$g4.5 <- car::recode(ISP$g4.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+
+table(ISP$g4.5)
+
+##q0057 g4.6 --
+table(ISP$q0057_0006)
+ISP$g4.6 <- as.factor(ISP$q0057_0006)
+ISP$g4.6 <- car::recode(ISP$g4.6, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+
+table(ISP$g4.6)
+
+
+##G5 (q0058) - limite trabajo (g2)------
+## q0058_1 - (g5.1)----
+table(ISP$q0058_0001)
+ISP$g5.1 <- as.factor(ISP$q0058_0001)
+ISP$g5.1 <- car::recode(ISP$g5.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+table(ISP$g5.1)
+## q0058_2 - (g5.2)----
+table(ISP$q0058_0002)
+ISP$g5.2 <- as.factor(ISP$q0058_0002)
+ISP$g5.2 <- car::recode(ISP$g5.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+## q0058_3 - (g5.3)----
+table(ISP$q0058_0003)
+ISP$g5.3 <- as.factor(ISP$q0058_0003)
+ISP$g5.3 <- car::recode(ISP$g5.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+# G6 -- redes de apoyo ------
+## Antes
+## q0059_1 - (g6.1_abuelo)----
+table(ISP$q0059_0001)
+ISP$g6.1_abuelo <- as.factor(ISP$q0059_0001)
+ISP$g6.1_abuelo <- car::recode(ISP$g6.1_abuelo, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+
+table(ISP$g6.1_abuelo)
+
+## q0059_1 - (g6.1_otro)----
+table(ISP$q0059_0002)
+ISP$g6.1_otro <- as.factor(ISP$q0059_0002)
+ISP$g6.1_otro <- car::recode(ISP$g6.1_otro, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.1_otro)
+
+## q0059_3 - (g6.1_guarderia)----
+table(ISP$q0059_0003)
+ISP$g6.1_guarderia <- as.factor(ISP$q0059_0003)
+ISP$g6.1_guarderia <- car::recode(ISP$g6.1_guarderia, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.1_guarderia)
+
+## q0059_4 - (g6.1_escuela)----
+table(ISP$q0059_0004)
+ISP$g6.1_escuela <- as.factor(ISP$q0059_0004)
+ISP$g6.1_escuela <- car::recode(ISP$g6.1_escuela, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.1_escuela)
+
+## q0059_1 - (g6.1_tcp)----
+table(ISP$q0059_0005)
+ISP$g6.1_tcp <- as.factor(ISP$q0059_0005)
+ISP$g6.1_tcp <- car::recode(ISP$g6.1_tcp, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.1_tcp)
+
+## q0059_6 - (g6.1_ninguno)----
+table(ISP$q0059_0006)
+ISP$g6.1_ninguno <- as.factor(ISP$q0059_0006)
+ISP$g6.1_ninguno <- car::recode(ISP$g6.1_ninguno, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.1_ninguno)
+
+## Despues G6.2----
+## q0060_1 - (g6.2_abuelo)----
+table(ISP$q0060_0001)
+ISP$g6.2_abuelo <- as.factor(ISP$q0060_0001)
+ISP$g6.2_abuelo <- car::recode(ISP$g6.2_abuelo, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                               levels= c("Si", "No"))
+
+table(ISP$g6.2_abuelo)
+
+## q0060_1 - (g6.2_otro)----
+table(ISP$q0060_0002)
+ISP$g6.2_otro <- as.factor(ISP$q0060_0002)
+ISP$g6.2_otro <- car::recode(ISP$g6.2_otro, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                             levels= c("Si", "No"))
+
+table(ISP$g6.2_otro)
+
+## q0060_3 - (g6.2_guarderia)----
+table(ISP$q0060_0003)
+ISP$g6.2_guarderia <- as.factor(ISP$q0060_0003)
+ISP$g6.2_guarderia <- car::recode(ISP$g6.2_guarderia, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                                  levels= c("Si", "No"))
+
+table(ISP$g6.2_guarderia)
+
+## q0060_4 - (g6.2_escuela)----
+table(ISP$q0060_0004)
+ISP$g6.2_escuela <- as.factor(ISP$q0060_0004)
+ISP$g6.2_escuela <- car::recode(ISP$g6.2_escuela, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                                levels= c("Si", "No"))
+
+table(ISP$g6.2_escuela)
+
+## q0060_1 - (g6.2_tcp)----
+table(ISP$q0060_0005)
+ISP$g6.2_tcp <- as.factor(ISP$q0060_0005)
+ISP$g6.2_tcp <- car::recode(ISP$g6.2_tcp, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                            levels= c("Si", "No"))
+
+table(ISP$g6.2_tcp)
+
+
+## q0060_6 - (g6.2_ninguno)----
+table(ISP$q0060_0006)
+ISP$g6.2_ninguno <- as.factor(ISP$q0060_0006)
+ISP$g6.2_ninguno <- car::recode(ISP$g6.2_ninguno, recodes= c("1= 'Si';NA='No'"), as.factor = T,
+                                levels= c("Si", "No"))
+
+table(ISP$g6.2_ninguno)
+
+##G7 (q0061) - limite trabajo (g7)------
+## q0061_1 - (g7.1)----
+table(ISP$q0061_0001)
+ISP$g7.1 <- as.factor(ISP$q0061_0001)
+ISP$g7.1 <- car::recode(ISP$g7.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+table(ISP$g7.1)
+## q0061_2 - (g7.2)----
+table(ISP$q0061_0002)
+ISP$g7.2 <- as.factor(ISP$q0061_0002)
+ISP$g7.2 <- car::recode(ISP$g7.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+## q0061_3 - (g7.3)----
+table(ISP$q0061_0003)
+ISP$g7.3 <- as.factor(ISP$q0061_0003)
+ISP$g7.3 <- car::recode(ISP$g7.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+## q0061_3 - (g7.4)----
+table(ISP$q0061_0004)
+ISP$g7.4 <- as.factor(ISP$q0061_0004)
+ISP$g7.4 <- car::recode(ISP$g7.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+## q0061_3 - (g7.5)----
+table(ISP$q0061_0005)
+ISP$g7.5 <- as.factor(ISP$q0061_0005)
+ISP$g7.5 <- car::recode(ISP$g7.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+table(ISP$g7.5)
+
+##g8 (q0062) - VIOLENCIA DE GENERO (g8)------
+## q0062_1 - (g8.1)----
+table(ISP$q0062_0001)
+ISP$g8.1 <- as.factor(ISP$q0062_0001)
+ISP$g8.1 <- car::recode(ISP$g8.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+table(ISP$g8.1)
+## q0062_2 - (g8.2)----
+table(ISP$q0062_0002)
+ISP$g8.2 <- as.factor(ISP$q0062_0002)
+ISP$g8.2 <- car::recode(ISP$g8.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+## q0062_3 - (g8.3)----
+table(ISP$q0062_0003)
+ISP$g8.3 <- as.factor(ISP$q0062_0003)
+ISP$g8.3 <- car::recode(ISP$g8.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+## q0062_3 - (g8.4)----
+table(ISP$q0062_0004)
+ISP$g8.4 <- as.factor(ISP$q0062_0004)
+ISP$g8.4 <- car::recode(ISP$g8.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+## q0062_3 - (g8.5)----
+table(ISP$q0062_0005)
+ISP$g8.5 <- as.factor(ISP$q0062_0005)
+ISP$g8.5 <- car::recode(ISP$g8.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+table(ISP$g8.5)
+
+## q0062_6 - (g8.6)----
+table(ISP$q0062_0005)
+ISP$g8.6 <- as.factor(ISP$q0062_0006)
+ISP$g8.6 <- car::recode(ISP$g8.6, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+table(ISP$g8.6)
+
+## q0062_7 - (g8.7)----
+table(ISP$q0062_0007)
+ISP$g8.7 <- as.factor(ISP$q0062_0007)
+ISP$g8.7 <- car::recode(ISP$g8.7, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+table(ISP$g8.7)
+
+## q0062_8 - (g8.8)----
+table(ISP$q0062_0008)
+ISP$g8.8 <- as.factor(ISP$q0062_0008)
+ISP$g8.8 <- car::recode(ISP$g8.8, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+
+table(ISP$g8.8)
+
+
+--------------
 ## H. Salud Laboral (ámbos modulos)
-# H.1 (q0081) - Intensidad ---------
-# h1.1 (q0081_0001) - rapidez ------- 
-table(ISP$q0081_0001)
-ISP$h1.1 <- as.factor(ISP$q0081_0001)
+# H.1 (q0063) - Intensidad ---------
+# h1.1 (q0063_0001) - rapidez ------- 
+table(ISP$q0063_0001)
+ISP$h1.1 <- as.factor(ISP$q0063_0001)
 ISP$h1.1 <- car::recode(ISP$h1.1, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
 levels(ISP$h1.1)
-# h1.2 (q0081_0002) - acumulacion  ------- 
-ISP$h1.2 <- as.factor(ISP$q0081_0002)
+# h1.2 (q0063_0002) - acumulacion  ------- 
+ISP$h1.2 <- as.factor(ISP$q0063_0002)
 ISP$h1.2 <- car::recode(ISP$h1.2, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.3 (q0081_0003) - acumulacion  ------- 
-ISP$h1.3 <- as.factor(ISP$q0081_0003)
+# h1.3 (q0063_0003) - acumulacion  ------- 
+ISP$h1.3 <- as.factor(ISP$q0063_0003)
 ISP$h1.3 <- car::recode(ISP$h1.3, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.4 (q0081_0004) - acumulacion  ------- 
-ISP$h1.4 <- as.factor(ISP$q0081_0004)
+# h1.4 (q0063_0004) - acumulacion  ------- 
+ISP$h1.4 <- as.factor(ISP$q0063_0004)
 ISP$h1.4 <- car::recode(ISP$h1.4, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.5 (q0081_0005) - acumulacion  ------- 
-ISP$h1.5 <- as.factor(ISP$q0081_0005)
+# h1.5 (q0063_0005) - acumulacion  ------- 
+ISP$h1.5 <- as.factor(ISP$q0063_0005)
 ISP$h1.5 <- car::recode(ISP$h1.5, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.6 (q0081_0006) - acumulacion  ------- 
-ISP$h1.6 <- as.factor(ISP$q0081_0006)
+# h1.6 (q0063_0006) - acumulacion  ------- 
+ISP$h1.6 <- as.factor(ISP$q0063_0006)
 ISP$h1.6 <- car::recode(ISP$h1.6, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.7 (q0081_0007) - acumulacion  ------- 
-ISP$h1.7 <- as.factor(ISP$q0081_0007)
+# h1.7 (q0063_0007) - acumulacion  ------- 
+ISP$h1.7 <- as.factor(ISP$q0063_0007)
 ISP$h1.7 <- car::recode(ISP$h1.7, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
 
-# H.2 (q0082_0001 a q0082_0005) - Salud Mental  ---------
-# h2.1 (q0082_0001) - nervios ------- 
-table(ISP$q0082_0001)
-ISP$h2.1 <- as.factor(ISP$q0082_0001)
+# H.2 (q0064_0001 a q0064_0005) - Salud Mental  ---------
+# h2.1 (q0064_0001) - nervios ------- 
+table(ISP$q0064_0001)
+ISP$h2.1 <- as.factor(ISP$q0064_0001)
 ISP$h2.1 <- car::recode(ISP$h2.1, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
 levels(ISP$h2.1)
-# h1.2 (q0082_0002) - animo  ------- 
-ISP$h2.2 <- as.factor(ISP$q0082_0002)
+# h2.2 (q0064_0002) - animo  ------- 
+ISP$h2.2 <- as.factor(ISP$q0064_0002)
 ISP$h2.2 <- car::recode(ISP$h2.2, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.3 (q0082_0003) - tranquilo   ------- 
-ISP$h2.3 <- as.factor(ISP$q0082_0003)
+# h2.3 (q0064_0003) - tranquilo   ------- 
+ISP$h2.3 <- as.factor(ISP$q0064_0003)
 ISP$h2.3 <- car::recode(ISP$h2.3, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.4 (q0082_0004) - triste  ------- 
-ISP$h2.4 <- as.factor(ISP$q0082_0004)
+# h2.4 (q0064_0004) - triste  ------- 
+ISP$h2.4 <- as.factor(ISP$q0064_0004)
 ISP$h2.4 <- car::recode(ISP$h2.4, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h1.5 (q0082_0005) - feliz  ------- 
-ISP$h2.5 <- as.factor(ISP$q0082_0005)
+# h2.5 (q0064_0005) - feliz  ------- 
+ISP$h2.5 <- as.factor(ISP$q0064_0005)
 ISP$h2.5 <- car::recode(ISP$h2.5, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
 
-# H.3 (q0082_0006 a q0082_0008) - Salud Física  ---------
-# h3.1 (q0081_0006) - dolor  ------- 
-ISP$h3.1 <- as.factor(ISP$q0082_0006)
+# H.3 (q0064_0006 a q0064_0008) - Salud Física  ---------
+# h3.1 (q0063_0006) - dolor  ------- 
+ISP$h3.1 <- as.factor(ISP$q0065_0001)
 ISP$h3.1 <- car::recode(ISP$h3.1, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h3.2 (q0081_0007) - percepcion dolor  ------- 
-ISP$h3.2 <- as.factor(ISP$q0082_0007)
+table(ISP$h3.1)
+# h3.2 (q0063_0007) - percepcion dolor  ------- 
+ISP$h3.2 <- as.factor(ISP$q0065_0002)
 ISP$h3.2 <- car::recode(ISP$h3.2, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# h3.3 (q0081_0008) - palpitaciones  ------- 
-ISP$h3.3 <- as.factor(ISP$q0082_0008)
+# h3.3 (q0063_0008) - palpitaciones  ------- 
+ISP$h3.3 <- as.factor(ISP$q0065_0003)
 ISP$h3.3 <- car::recode(ISP$h3.3, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
                         levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
 
+table(ISP$h3.3)
+
 ## I. Tareas teletrabajbles (ámbos modulos)
-# i.1 (q0083) - Tareas que cree se podrían teletrabajar ---------
-# i1.1 (q0083_0001) - reuniones ------- 
-table(ISP$q0083_0001)
-ISP$i1.1 <- as.factor(ISP$q0083_0001)
-ISP$i1.1 <- car::recode(ISP$i1.1, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
+# i.1 (q0066) - Tareas que cree se podrían teletrabajar ---------
+# i1.1 (q0066_0001) - reuniones ------- 
+table(ISP$q0066_0001)
+ISP$i1.1 <- as.factor(ISP$q0066_0001)
+ISP$i1.1 <- car::recode(ISP$i1.1, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
 levels(ISP$i1.1)
-# i1.2 (q0083_0002) - atencion  ------- 
-ISP$i1.2 <- as.factor(ISP$q0083_0002)
-ISP$i1.2 <- car::recode(ISP$i1.2, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# i1.3 (q0083_0003) - informacion  ------- 
-ISP$i1.3 <- as.factor(ISP$q0083_0003)
-ISP$i1.3 <- car::recode(ISP$i1.3, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# i1.4 (q0083_0004) - tareas simples  sin concentracion ------- 
-ISP$i1.4 <- as.factor(ISP$q0083_0004)
-ISP$i1.4 <- car::recode(ISP$i1.4, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# i1.5 (q0083_0005) - tareas simples concentracion  ------- 
-ISP$i1.5 <- as.factor(ISP$q0083_0005)
-ISP$i1.5 <- car::recode(ISP$i1.5, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
-# i1.6 (q0083_0006) - tareas complejas concentracion  ------- 
-ISP$i1.6 <- as.factor(ISP$q0083_0006)
-ISP$i1.6 <- car::recode(ISP$i1.6, recodes= c("1='Nunca';2='Solo unas pocas veces';3='Algunas veces';4='La mayoria de las veces';5='Siempre';NA=NA"), as.factor = T,
-                        levels= c("Nunca", "Solo unas pocas veces", "Algunas veces", "La mayoria de las veces", "Siempre"))
+table(ISP$i1.1)
+
+# i1.2 (q0066_0002) - atencion  ------- 
+ISP$i1.2 <- as.factor(ISP$q0066_0002)
+ISP$i1.2 <- car::recode(ISP$i1.2, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+
+# i1.3 (q0066_0003) - informacion  ------- 
+ISP$i1.3 <- as.factor(ISP$q0066_0003)
+ISP$i1.3 <- car::recode(ISP$i1.3, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+
+# i1.4 (q0066_0004) - tareas simples  sin concentracion ------- 
+ISP$i1.4 <- as.factor(ISP$q0066_0004)
+ISP$i1.4 <- car::recode(ISP$i1.4, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+
+
+# i1.5 (q0066_0005) - tareas simples concentracion  ------- 
+ISP$i1.5 <- as.factor(ISP$q0066_0005)
+ISP$i1.5 <- car::recode(ISP$i1.5, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+
+# i1.6 (q0066_0006) - tareas complejas concentracion  ------- 
+table(ISP$q0066_0006)
+ISP$i1.6 <- as.factor(ISP$q0066_0006)
+ISP$i1.6 <- car::recode(ISP$i1.6, recodes= c("1='Si';NA='No'"), as.factor = T,
+                        levels= c("Si", "No"))
+table(ISP$i1.6)
+
+## i3 -------------
+
+#i3.1 ----
+table(ISP$q0067_0001)
+ISP$i3.1 <- as.factor(ISP$q0067_0001)
+ISP$i3.1 <- car::recode(ISP$i3.1, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+#i3.2 ----
+table(ISP$q0067_0002)
+ISP$i3.2 <- as.factor(ISP$q0067_0002)
+ISP$i3.2 <- car::recode(ISP$i3.2, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+#i3.3 ----
+table(ISP$q0067_0003)
+ISP$i3.3 <- as.factor(ISP$q0067_0003)
+ISP$i3.3 <- car::recode(ISP$i3.3, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+#i3.4 ----
+table(ISP$q0067_0004)
+ISP$i3.4 <- as.factor(ISP$q0067_0004)
+ISP$i3.4 <- car::recode(ISP$i3.4, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+#i3.5 ----
+table(ISP$q0067_0005)
+ISP$i3.5 <- as.factor(ISP$q0067_0005)
+ISP$i3.5 <- car::recode(ISP$i3.5, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+#i3.6 ----
+table(ISP$q0067_0006)
+ISP$i3.6 <- as.factor(ISP$q0067_0006)
+ISP$i3.6 <- car::recode(ISP$i3.6, recodes = c("1='Muy en desacuerdo';2='En desacuerdo'; 3='Ni acuerdo ni desacuerdo'; 4= 'De acuerdo'; 5='Muy de acuerdo'"), as.factor = T,
+                        levels =  c("Muy en desacuerdo", "En desacuerdo", "Ni acuerdo ni desacuerdo", "De acuerdo", "Muy de acuerdo"))
+
+table(ISP$i3.6)
+
 # i2 (q0084) - Nuevas modalidades preferidas  ---------
-table(ISP$q0084)
-ISP$i2 <- as.factor(ISP$q0084)
+table(ISP$q0068)
+ISP$i2 <- as.factor(ISP$q0068)
 ISP$i2 <- car::recode(ISP$i2, recodes= c("1='Teletrabajo total';2='Teletrabajo parcial';3='Trabajo normal';NA=NA"), as.factor = T,
                       levels= c("Teletrabajo total", "Teletrabajo parcial", "Trabajo normal"))
 
 # Z. Correo de contacto
-ISP$mail <- ISP$q0085
-ISP$mail <- ISP$z %>% simplify_strings()
-write.csv(ISP$mail, file = "data/isp-email.csv")
+ISP$mail <- ISP$q0069
+write.csv(ISP$mail, file = "informe_resultados/data/isp-email.csv")
 
 ## 4. Seleccionar variables
 ISP_proc <- ISP %>% select(- starts_with(c("q","p")))
-save(ISP_proc, file = "data/ISP_proc.RData")
-write.csv(ISP_proc, file = "data/ISP_proc.csv")
+save(ISP_proc, file = "informe_resultados/data/ISP_proc.RData")
+write.csv(ISP_proc, file = "informe_resultados/data/ISP_proc.csv")
