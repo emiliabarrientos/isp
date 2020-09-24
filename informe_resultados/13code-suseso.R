@@ -1,10 +1,10 @@
 #0. Recodificar SUSESO
 
 # 1. Cargar librerias 
-pacman::p_load(dplyr, tidyverse, forcats)
+pacman::p_load(dplyr, tidyverse, forcats, haven)
 
 # 2. Cargar base de datos
-load("data/isp3.RData")
+load("informe_resultados/data/isp.RData")
 
 # 3. Crear Riesgo psicosocial
 # Niveles: Riesgo bajo, riesgo medio, riesgo alto
@@ -14,7 +14,13 @@ load("data/isp3.RData")
 # Puntaje máximo posible: 28 + 7= 35
 # Sumar likert donde 0= Nunca y 5 = Siempre
 # Sumar variables h1.1 a h1.7 para cada individuo
-
+isp$h1.1 <- as.numeric(isp$h1.1)
+isp$h1.2 <- as.numeric(isp$h1.2)
+isp$h1.3 <- as.numeric(isp$h1.3)
+isp$h1.4 <- as.numeric(isp$h1.4)
+isp$h1.5 <- as.numeric(isp$h1.5)
+isp$h1.6 <- as.numeric(isp$h1.6)
+isp$h1.7 <- as.numeric(isp$h1.7)
 isp <- isp %>% 
   mutate(sum_rps = rowSums(select(., contains("h1.")))) %>% 
   mutate(rps = (sum_rps/35)*100) %>% mutate(n_rps = case_when(rps < 35.56 ~ 1,
@@ -47,6 +53,8 @@ isp$h2.4 <- as_factor(isp$h2.4)
 isp$h2.4 <- fct_rev(isp$h2.4)
 isp$h2.4 <- as.numeric(isp$h2.4)
 
+isp$h2.5 <- as.numeric(isp$h2.5)
+isp$h2.3 <- as.numeric(isp$h2.3)
 
 # 3.2.2 Crear variable
 isp <- isp %>% 
@@ -56,4 +64,4 @@ isp <- isp %>%
 # Un mayor puntaje significa mayor bienestar
 
 #Guardar ----
-save(isp,file= "data/isp3.RData")
+save(isp,file= "informe_resultados/data/isp.RData")
