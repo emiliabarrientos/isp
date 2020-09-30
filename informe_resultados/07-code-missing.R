@@ -1,6 +1,6 @@
 ##### Missing y correccion de flujo
 
-load("data/ISP_val.RData")
+load("informe_resultados/data/ISP_val.RData")
 
 #1. Combinacion de variables
 # La primera correcio de flujo ocurrio en el 03-code-procdata.R 
@@ -19,21 +19,21 @@ table(ISP_val$e6.1_otro)
 
 # 3. Missing por modulo
 sum(is.na(ISP_val$a6.3)) #0
-sum(is.na(ISP_val$b9)) #0
 sum(is.na(ISP_val$d5_mod)) #0
-sum(is.na(ISP_val$e7)) #1677
+sum(is.na(ISP_val$e7)) #910
 # Modulo f
 modulof <-  ISP_val %>% filter(!is.na(e7))
-sum(is.na(modulof$f3.6)) #2926
+sum(is.na(modulof$f2.6)) #1215
 # Modulo g
-modulog <-  modulof %>% filter(!is.na(f3.6))
-sum(is.na(modulog$g4)) #30
+modulog <-  modulof %>% filter(!is.na(f2.6))
+sum(is.na(modulog$g3.1)) #36
+
 #Modulo h 
-moduloh <-  modulog %>% filter(!is.na(g4))
-sum(is.na(modulog$h3.3)) #63
+moduloh <-  modulog %>% filter(!is.na(g3.1))
+sum(is.na(modulog$h3.3)) #74
 #Modulo i
 moduloi <-  moduloh %>% filter(!is.na(h3.3))
-sum(is.na(moduloi$i2)) #66
+sum(is.na(moduloi$i2)) #42
 sum(complete.cases(ISP_val))
 
 # 4. Duplicados 

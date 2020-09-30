@@ -6,7 +6,7 @@ pacman::p_load(dplyr,
                labelVector)
 
 #2. Cargar base de datos
-load("data/ISP_val.RData")
+load("informe_resultados/data/ISP_val.RData")
 table(ISP_val$d5_mod)
 #3. Explorar base de datos
 as_tibble(ISP_val)
@@ -15,22 +15,22 @@ as_tibble(ISP_val)
 
 #4.1 Publico
 # Para trabajo de nosotros la unica variable que será eliminada será email, hora y dia
-ISP_anonima <- ISP_val %>% select(-c(respondent_id,date,hour,date2,hour2,mail, ip_address, b1.2))
+names(ISP_val)
+ISP_anonima <- ISP_val %>% select(-c(respondent_id,date,hour,mail, ip_address))
 ISP_anonima<- ISP_anonima %>% select(starts_with(c("a","b", "c", "d", "e", "f", "g", "h", "i")))
 # La base de datos que será entregada a ISP debería contener mas variables anonimizadas
 ## Email, ocupación y el otro de sindicatos
-ISP_anonima_publica <-ISP_anonima %>%  select(-c(b4_isco_cod))
-
+names(ISP_anonima)
 # 5. Etiquetar
 get_label(ISP)
 isp <- 
   set_label(ISP_anonima,
+            a0_país = "País",
              a1_sexo = "Genero",
              a2_edad = "Edad",
             edad_cat = "Tramos edad",
              a3_educ = "Nivel educacional",
-             a4_reg = "Region de residencia",       
-             a5_comuna = "Comuna de residencia",
+            a5_etnia = "Etnia",
              a6.1 = "Nº de personas viven en hogar",      
              a6.2 = "Nº personas poblacion de riesgo",
              a6.3 =   "Nº personas estudiantes",       
@@ -149,8 +149,9 @@ isp <-
              i1.6   = "Tareas teletrabajables - tareas complejas",        
              i2 = "Modalidad de trabajo preferida")
 
+isp <- ISP_anonima
 # 6. Exportacion
 #RData
-save(isp, file ="data/isp.RData")
-write.csv(isp, file ="data/isp.csv")
-writexl::write_xlsx(isp, "data/isp.xlsx")
+save(isp, file ="informe_resultados/data/isp.RData")
+write.csv(isp, file ="informe_resultados/data/isp.csv")
+writexl::write_xlsx(isp, "informe_resultados/data/isp.xlsx")
