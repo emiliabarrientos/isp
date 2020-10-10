@@ -795,7 +795,7 @@ summary(ISP$g3.2)
 table(ISP$q0057_0001)
 ISP$g4.1 <- as.factor(ISP$q0057_0001)
 ISP$g4.1 <- car::recode(ISP$g4.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.1)
@@ -804,7 +804,7 @@ table(ISP$g4.1)
 table(ISP$q0057_0002)
 ISP$g4.2 <- as.factor(ISP$q0057_0002)
 ISP$g4.2 <- car::recode(ISP$g4.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.2)
@@ -813,7 +813,7 @@ table(ISP$g4.2)
 table(ISP$q0057_0003)
 ISP$g4.3 <- as.factor(ISP$q0057_0003)
 ISP$g4.3 <- car::recode(ISP$g4.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.3)
@@ -822,7 +822,7 @@ table(ISP$g4.3)
 table(ISP$q0057_0004)
 ISP$g4.4 <- as.factor(ISP$q0057_0004)
 ISP$g4.4 <- car::recode(ISP$g4.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.4)
@@ -831,7 +831,7 @@ table(ISP$g4.4)
 table(ISP$q0057_0005)
 ISP$g4.5 <- as.factor(ISP$q0057_0005)
 ISP$g4.5 <- car::recode(ISP$g4.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.5)
@@ -840,7 +840,7 @@ table(ISP$g4.5)
 table(ISP$q0057_0006)
 ISP$g4.6 <- as.factor(ISP$q0057_0006)
 ISP$g4.6 <- car::recode(ISP$g4.6, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 
 table(ISP$g4.6)
@@ -851,18 +851,18 @@ table(ISP$g4.6)
 table(ISP$q0058_0001)
 ISP$g5.1 <- as.factor(ISP$q0058_0001)
 ISP$g5.1 <- car::recode(ISP$g5.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 table(ISP$g5.1)
 ## q0058_2 - (g5.2)----
 table(ISP$q0058_0002)
 ISP$g5.2 <- as.factor(ISP$q0058_0002)
 ISP$g5.2 <- car::recode(ISP$g5.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 ## q0058_3 - (g5.3)----
 table(ISP$q0058_0003)
 ISP$g5.3 <- as.factor(ISP$q0058_0003)
 ISP$g5.3 <- car::recode(ISP$g5.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 # G6 -- redes de apoyo ------
 ## Antes
 ## q0059_1 - (g6.1_abuelo)----
@@ -968,30 +968,30 @@ table(ISP$g6.2_ninguno)
 table(ISP$q0061_0001)
 ISP$g7.1 <- as.factor(ISP$q0061_0001)
 ISP$g7.1 <- car::recode(ISP$g7.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 table(ISP$g7.1)
 ## q0061_2 - (g7.2)----
 table(ISP$q0061_0002)
 ISP$g7.2 <- as.factor(ISP$q0061_0002)
 ISP$g7.2 <- car::recode(ISP$g7.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 ## q0061_3 - (g7.3)----
 table(ISP$q0061_0003)
 ISP$g7.3 <- as.factor(ISP$q0061_0003)
 ISP$g7.3 <- car::recode(ISP$g7.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 ## q0061_3 - (g7.4)----
 table(ISP$q0061_0004)
 ISP$g7.4 <- as.factor(ISP$q0061_0004)
 ISP$g7.4 <- car::recode(ISP$g7.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 ## q0061_3 - (g7.5)----
 table(ISP$q0061_0005)
 ISP$g7.5 <- as.factor(ISP$q0061_0005)
 ISP$g7.5 <- car::recode(ISP$g7.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 table(ISP$g7.5)
 
@@ -1000,30 +1000,30 @@ table(ISP$g7.5)
 table(ISP$q0062_0001)
 ISP$g8.1 <- as.factor(ISP$q0062_0001)
 ISP$g8.1 <- car::recode(ISP$g8.1, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 table(ISP$g8.1)
 ## q0062_2 - (g8.2)----
 table(ISP$q0062_0002)
 ISP$g8.2 <- as.factor(ISP$q0062_0002)
 ISP$g8.2 <- car::recode(ISP$g8.2, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 ## q0062_3 - (g8.3)----
 table(ISP$q0062_0003)
 ISP$g8.3 <- as.factor(ISP$q0062_0003)
 ISP$g8.3 <- car::recode(ISP$g8.3, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 ## q0062_3 - (g8.4)----
 table(ISP$q0062_0004)
 ISP$g8.4 <- as.factor(ISP$q0062_0004)
 ISP$g8.4 <- car::recode(ISP$g8.4, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 ## q0062_3 - (g8.5)----
 table(ISP$q0062_0005)
 ISP$g8.5 <- as.factor(ISP$q0062_0005)
 ISP$g8.5 <- car::recode(ISP$g8.5, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 table(ISP$g8.5)
 
@@ -1031,7 +1031,7 @@ table(ISP$g8.5)
 table(ISP$q0062_0005)
 ISP$g8.6 <- as.factor(ISP$q0062_0006)
 ISP$g8.6 <- car::recode(ISP$g8.6, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 table(ISP$g8.6)
 
@@ -1039,7 +1039,7 @@ table(ISP$g8.6)
 table(ISP$q0062_0007)
 ISP$g8.7 <- as.factor(ISP$q0062_0007)
 ISP$g8.7 <- car::recode(ISP$g8.7, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 table(ISP$g8.7)
 
@@ -1047,7 +1047,7 @@ table(ISP$g8.7)
 table(ISP$q0062_0008)
 ISP$g8.8 <- as.factor(ISP$q0062_0008)
 ISP$g8.8 <- car::recode(ISP$g8.8, recodes= c("1='Siempre';2='La mayoría de las veces';3='Algunas veces';4='Solo unas pocas veces';5='Nunca';6='No aplica';NA=NA"), as.factor = T,
-                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Nunca", "No aplica"))
+                        levels= c("Siempre","La mayoría de las veces","Algunas veces","Solo unas pocas veces","Nunca", "No aplica"))
 
 table(ISP$g8.8)
 
