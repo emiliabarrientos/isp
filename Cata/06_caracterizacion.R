@@ -113,7 +113,7 @@ df= df %>%
   labs(x = "Nivel educativo", y = "%")
 
 #Edad
-
+library(dplyr)
 data_isp_rc %>% count(edad_cat)
 
 data_isp_rc = data_isp_rc %>%
@@ -153,6 +153,24 @@ data_isp_c %>% count (a6.1)
 data_isp_c %>% count (a6.1, a6.1_rec)
 data_isp_c %>% count (a6.1_rec)
 
+#Tabla con promedio
+
+#Pais
+T4.6w3<-data_isp_rc %>% group_by(modalidad) %>% summarize(C=weighted.mean(a6.1,pond1, na.rm = TRUE))
+
+T4.6q_3<-data_isp_rc %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(a6.1,pond1, na.rm = TRUE))
+
+#Edad
+T4.63<-data_isp_rc %>% group_by(edad_cat) %>% summarize(C=weighted.mean(a6.1,pond1, na.rm = TRUE))
+
+#Modalidad
+T4.6aw3<-data_isp_rc %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(a6.1,pond1, na.rm = TRUE))
+
+#Pais
+T4.s6aw3<-data_isp_rc %>% group_by(a0_pais) %>% summarize(C=weighted.mean(a6.1,pond1, na.rm = TRUE))
+
+
+T1.e6.8<-freq(dta$e6.3_desc, weights = dta$pond1, useNA = c("no"),  round.digits = 2)
 
 data_isp_c = data_isp_c %>%
   mutate(a6.1_rec=case_when(
@@ -201,12 +219,37 @@ df_1 %>%
 
 #recursos economicos
 
+data_isp_rc = data_isp_rc %>% 
+  filter(etnia == "Sí, pertenezco") 
+data_isp_rc %>% count(etnia)
+pond1 <- data_isp_rc %>% pull(pond1)
+
+T1.8<-ctable(data_isp_rc$edad_cat, data_isp_rc$a6.2, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+T1.9<-ctable(data_isp_rc$a0_pais, data_isp_rc$a6.2, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+
+
+#COn quién comparte
+
+T1.8<-ctable(data_isp_rc$edad_cat, data_isp_rc$a6.2.filtro, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+T1.9<-ctable(data_isp_rc$a0_pais, data_isp_rc$a6.2.filtro, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+T1.10<-ctable(data_isp_rc$a5_etnia, data_isp_rc$a6.2.filtro, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+T1.11<-ctable(data_isp_rc$modalidad, data_isp_rc$a6.2.filtro, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+
+
+data_isp_rc = data_isp_rc %>%
+ filter(a1_sexo!="Otro")
+
+data_isp_rc %>% count(a1_sexo)
+
+T1a.7<-ctable(data_isp_rc$a1_sexo, data_isp_rc$a6.2.filtro, weights = data_isp_rc$pond1, useNA = c("no"), round.digits = 2)
+
+
 mergesvy <- data_isp_rc %>%
   as_survey_design(
     weights = pond1)
 
 table_freq <- mergesvy %>%
-  dplyr::group_by(a6.2, a0_pais) %>%
+  dplyr::group_by(edad_cat_recode,a6.2) %>%
   summarize(proportion = survey_mean(,na.rm=TRUE))
 df=data.frame(table_freq, digits=2)
 #summary(factor(df$proportion))
@@ -241,7 +284,7 @@ mergesvy <- data_isp_rc %>%
     weights = pond1)
 
 table_freq <- mergesvy %>%
-  dplyr::group_by(d5_mod) %>%
+  dplyr::group_by(a0_pais, modalidad) %>%
   summarize(proportion = survey_mean(,na.rm=TRUE))
 df=data.frame(table_freq, digits=2)
 #summary(factor(df$proportion))
@@ -251,16 +294,110 @@ df= df %>%
   mutate(p=round(perc, 2))
 
 df %>% 
-  ggplot(aes(x=d5_mod, y=proportion))+
+  ggplot(aes(x=modalidad, y=proportion))+
   geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(~a0_pais)+
   geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 5, angle =90)+
-  scale_y_continuous(limits = c(0, 0.6), labels = scales::percent)+
-  labs(x = "Modalidad de trabajo", y = "%")+
+  scale_y_continuous(limits = c(0, 0.8), labels = scales::percent)+
+  labs(x = "Modalidad de trabajo", y = "%")
   #theme(panel.background = element_rect(fill = "red"))
 
-T2.5<-freq(data_isp_rc$d5_mod, weights = data_isp_rc$pond1, useNA = c("no"),  round.digits = 2)
+##///##
+mergesvy <- data_isp_rc %>%
+  as_survey_design(
+    weights = pond1)
 
-# Niños, adolescentes y abuelos en el hogar
+table_freq <- mergesvy %>%
+  dplyr::group_by(a5_etnia, modalidad) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df=data.frame(table_freq, digits=2)
+#summary(factor(df$proportion))
+
+df= df %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2))
+
+df %>% 
+  ggplot(aes(x=modalidad, y=proportion))+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(~a5_etnia)+
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 5, angle =90)+
+  scale_y_continuous(limits = c(0, 0.8), labels = scales::percent)+
+  labs(x = "Modalidad de trabajo", y = "%")
+#theme(panel.background = element_rect(fill = "red"))
+
+## genero y modalidad
+table_freq <- mergesvy %>%
+  filter (a1_sexo!="Otro") %>% 
+  dplyr::group_by(a1_sexo, modalidad) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df=data.frame(table_freq, digits=2)
+#summary(factor(df$proportion))
+
+df= df %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2))
+
+df %>% 
+  ggplot(aes(x=modalidad, y=proportion))+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(~a1_sexo)+
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 5, angle =90)+
+  scale_y_continuous(limits = c(0, 0.8), labels = scales::percent)+
+  labs(x = "Modalidad de trabajo", y = "%")
+
+T2.5<-freq(data_isp_rc$modalidad, weights = data_isp_rc$pond1, useNA = c("no"),  round.digits = 2)
+
+# POBLACION DE RIESGO
+
+#Genero
+T4e3<-data_isp_rc %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(a6.3,pond1, na.rm = TRUE))
+
+#Etnia
+T4.6q_3<-data_isp_rc %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(a6.3,pond1, na.rm = TRUE))
+
+#Edad
+T4.63<-data_isp_rc %>% group_by(edad_cat) %>% summarize(C=weighted.mean(a6.3,pond1, na.rm = TRUE))
+
+#Pais
+T4.6waa3<-data_isp_rc %>% group_by(a0_pais) %>% summarize(C=weighted.mean(a6.3,pond1, na.rm = TRUE))
+
+#Modalidad
+T4.6w3<-data_isp_rc %>% group_by(modalidad) %>% summarize(C=weighted.mean(a6.3,pond1, na.rm = TRUE))
+
+#PREESCOLAR
+#Genero
+T5e3<-data_isp_rc %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(a6.4,pond1, na.rm = TRUE))
+
+#Etnia
+T5.6q_3<-data_isp_rc %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(a6.4,pond1, na.rm = TRUE))
+
+#Edad
+T5.63<-data_isp_rc %>% group_by(edad_cat) %>% summarize(C=weighted.mean(a6.4,pond1, na.rm = TRUE))
+
+#Pais
+T5.6waa3<-data_isp_rc %>% group_by(a0_pais) %>% summarize(C=weighted.mean(a6.4,pond1, na.rm = TRUE))
+
+#Modalidad
+T5.6w3<-data_isp_rc %>% group_by(modalidad) %>% summarize(C=weighted.mean(a6.4,pond1, na.rm = TRUE))
+
+
+#Basica
+#Genero
+aT5e3<-data_isp_rc %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(a6.5,pond1, na.rm = TRUE))
+
+#Etnia
+aT5.6q_3<-data_isp_rc %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(a6.5,pond1, na.rm = TRUE))
+
+#Edad
+aT5.63<-data_isp_rc %>% group_by(edad_cat) %>% summarize(C=weighted.mean(a6.5,pond1, na.rm = TRUE))
+
+#Pais
+aT5.6waa3<-data_isp_rc %>% group_by(a0_pais) %>% summarize(C=weighted.mean(a6.5,pond1, na.rm = TRUE))
+
+#Modalidad
+aT5.6w3<-data_isp_rc %>% group_by(modalidad) %>% summarize(C=weighted.mean(a6.5,pond1, na.rm = TRUE))
+
 
 data_isp_rc = data_isp_rc %>%
   mutate(a6_riesgo_recode=case_when(
@@ -326,6 +463,10 @@ T1.2<-freq(data_isp_rc$a6_preesc_recode, weights = data_isp_rc$pond1, useNA = c(
 T1.3<-freq(data_isp_rc$a6_riesgo_recode, weights = data_isp_rc$pond1, useNA = c("no"),  round.digits = 2)
 
 
+
+T1.3<-freq(data_isp_rc$etnia, weights = data_isp_rc$pond1, useNA = c("no"),  round.digits = 2)
+
+
 #Grafico N niños, adolescentes y adultos
 data_isp_c %>% count(a6.3)
 data_isp_c %>% count(a6.4)
@@ -389,5 +530,37 @@ order_arg = ggplot(df_final_post, aes(x=g,y=proportion)) +
   facet_wrap(~variable, scales = "free_x")+
   labs(x = "Respuesta", y = "%") +
   scale_y_continuous(limits = c(0, 0.9), labels = scales::percent)
+
+##etnia
+
+data_isp_rc = data_isp_rc %>%
+  mutate(etnia=case_when(
+    a5_etnia == "Si"  ~ "Sí, pertenezco",   #Factor
+    a5_etnia == "No"  ~ "No pertenezco"
+  ))
+
+
+mergesvy <- data_isp_rc %>%
+  as_survey_design(
+    weights = pond1)
+
+table_freq_02 <- mergesvy %>% 
+  dplyr::group_by(etnia) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+#help(srvyr)
+
+df_1=data.frame(table_freq_02)
+#summary(factor(df$proportion))
+
+df_1= df_1 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) 
+
+df_1 %>% 
+  ggplot(aes(x=etnia, y=proportion))+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 5, angle =90)+
+  scale_y_continuous(limits = c(0, 0.9), labels = scales::percent)+
+  labs(x = "Etnia", y = "%")
 
 

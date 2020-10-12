@@ -76,9 +76,9 @@ g1_graph=ggplot(df, aes(label, proportion)) +
 T2.1<-freq(data_isp$g1_recode, weights = data_isp$pond1, useNA = c("no"),  round.digits = 2) 
 T1.7<-ctable(data_isp$a0_pais, data_isp$g1_recode, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
 
-T1.6<-ctable(data_isp$g1_recode, data_isp$a1_sexo, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
-T1.99<-ctable(data_isp$g1_recode, data_isp$a5_etnia, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
-T1.9<-ctable(data_isp$g1_recode, data_isp$edad_cat_recode, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
+T1.6<-ctable(data_isp$a1_sexo,data_isp$g1_recode, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
+T1.99<-ctable(data_isp$a5_etnia, data_isp$g1_recode, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
+T1.9<-ctable(data_isp$edad_cat, data_isp$g1_recode, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
 
 # G1 by country / sex
 mergesvy <- data_isp %>%
@@ -121,7 +121,7 @@ mergesvy <- data_isp %>%
 
 # frequency table via taylor series linearization
 table_freq_01 <- mergesvy %>%
-  dplyr::group_by(a0_pais, g1_recode, edad_cat_recode) %>%
+  dplyr::group_by(modalidad, g1_recode) %>%
   summarize(proportion = survey_mean(,na.rm=TRUE))
 #help(srvyr)
 
@@ -131,15 +131,13 @@ df=data.frame(table_freq_01, digits=2)
 df= df %>%
   mutate(perc = proportion * 100) %>%
   mutate(p=round(perc, 2)) %>%
-  mutate(label=factor(g1_recode, labels=c("No", "Sí"))) %>% 
-  rename(edad = edad_cat_recode) %>% 
   rename(reducción=g1_recode)
 
 df %>% 
-  ggplot(aes(x=reducción, y=proportion, fill=edad))+
+  ggplot(aes(x=reducción, y=proportion))+
   geom_bar(stat="identity", position = position_dodge())+
   geom_text(aes(label = p), position = position_dodge(1), vjust=-0.3)+
-  facet_wrap(~a0_pais)+
+  facet_wrap(~modalidad)+
   scale_y_continuous(limits = c(0, 1), labels = scales::percent)+
   scale_fill_manual(values = c("#d40c04", "#e05e5a", "#d3d3d3"))
 
@@ -156,7 +154,7 @@ mergesvy <- data_isp %>%
 # frequency table via taylor series linearization
 table_freq_01 <- mergesvy %>% 
   #filter(a0_pais != "Argentina") %>% 
-  dplyr::group_by(g1_recode, d5_mod) %>%
+  dplyr::group_by(modalidad, g1_recode) %>%
   summarize(proportion = survey_mean(,na.rm=TRUE))
 #help(srvyr)
 
@@ -166,18 +164,15 @@ df_3=data.frame(table_freq_01, digits=2)
 df_3= df_3 %>%
   mutate(perc = proportion * 100) %>%
   mutate(p=round(perc, 2)) %>%
-  mutate(label=factor(g1_recode, labels=c("No", "Sí"))) %>% 
-  rename(Modalidad= d5_mod)%>% 
   rename(reducción=g1_recode)
 
 df_3 %>% 
-  ggplot(aes(x=reducción, y=proportion, fill=Modalidad))+
-  geom_bar(stat="identity", position = position_dodge())+
+  ggplot(aes(x=reducción, y=proportion))+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
   geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 4, angle =90)+
-  facet_wrap(~Modalidad)+
+  facet_wrap(~modalidad)+
   scale_y_continuous(limits = c(0, 1), labels = scales::percent)+
-  labs(x = "Reducción de trabajo", y = "%") +
-  scale_fill_manual(values = c("#d40c04", "#e05e5a", "#d3d3d3"))
+  labs(x = "Reducción de trabajo", y = "%") 
 
 T1.9<-ctable(data_isp$g1_recode, data_isp$d5_mod, weights = data_isp$pond1, useNA = c("no"), round.digits = 2)
   

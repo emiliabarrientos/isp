@@ -44,7 +44,7 @@ data_isp %>% count(edad_cat)
 #2 Jóvenes    498
 #3 NA          72
 
-data_isp = data_isp %>%
+data_isp_1 = data_isp_1 %>%
   mutate(edad_cat_recode=case_when(
     edad_cat == "Adultos" ~ "Adultos",   #Factor
     edad_cat == "Jóvenes" ~ "Jóvenes", 

@@ -15,6 +15,7 @@ library(tibble)
 library(readr)
 library(survey)
 library(srvyr)
+library(radiant.data)
 
 #Base
 data_isp_c <- readRDS("C:/Users/catac/Dropbox/Cata/Github/isp/informe_resultados/data/data_isp.rds")
@@ -28,16 +29,35 @@ data_isp_c = data_isp_c %>%
   filter(!is.na(g2)) 
 T1.1<-freq(data_isp_c$g2, weights = data_isp_c$pond1, useNA = c("no"),  round.digits = 2)
 
-pond_1 <- data_isp_c %>% pull(pond1)
-T1.7<-ctable(data_isp_c$g2, data_isp_c$a1_sexo, weights = pond_1, round.digits = 2)
+data_isp_c = data_isp_c %>%
+  filter(a1_sexo!="Otro")
 
 pond_1 <- data_isp_c %>% pull(pond1)
-T1.8<-ctable(data_isp_c$g2, data_isp_c$a5_etnia , weights = pond_1, round.digits = 2)
+T1.7<-ctable(data_isp_c$a1_sexo, data_isp_c$g2, weights = pond_1, useNA = c("no"), round.digits = 2)
+
+pond_1 <- data_isp_c %>% pull(pond1)
+T1.8<-ctable(data_isp_c$a5_etnia , data_isp_c$g2, weights = pond_1, useNA = c("no"), round.digits = 2)
 
 data_isp_c %>%glimpse ()
 
 pond_1 <- data_isp_c %>% pull(pond1)
-T1.9<-ctable(data_isp_c$g2, data_isp_c$modalidad , weights = pond_1, round.digits = 2)
+T1.9<-ctable(data_isp_c$modalidad, data_isp_c$g2 , weights = pond_1,  useNA = c("no"), round.digits = 2)
+
+
+
+data_isp_c = data_isp_c %>%
+  mutate(edad_cat_recode=case_when(
+    edad_cat == "Adultos" ~ "Adultos",   #Factor
+    edad_cat == "Jóvenes" ~ "Jóvenes", 
+    TRUE ~ as.character(edad_cat) 
+  )) %>% 
+  filter(!is.na(edad_cat_recode))
+
+pond_1 <- data_isp_c %>% pull(pond1)
+T1.9a<-ctable(data_isp_c$edad_cat, data_isp_c$g2 , weights = pond_1, useNA = c("no"), round.digits = 2)
+
+pond_1 <- data_isp_c %>% pull(pond1)
+T1.a9<-ctable(data_isp_c$a0_pais, data_isp_c$g2 , weights = pond_1, useNA = c("no"),round.digits = 2)
 
 #### Género
 
@@ -132,6 +152,33 @@ data_isp_c = data_isp_c %>%
   mutate(red_apoyo_post = g6.2_abuelo + g6.2_otro+g6.2_guarderia+g6.2_escuela+g6.2_tcp+g6.2_ninguno)%>% 
   mutate(red_apoyo_post=as.factor(red_apoyo_post))
 
+######################
+
+T4.62_1<-data_isp_c %>% summarize(PH=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.62_2<-data_isp_c %>% summarize(PH=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+#Pais
+T4.62_3ss<-data_isp_c %>% group_by(a0_pais) %>% summarize(C=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.62_4ss<-data_isp_c %>% group_by(a0_pais) %>% summarize(C=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+#Genero
+T4.62_3<-data_isp_c %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.62_4<-data_isp_c %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+#Etnia
+T4.6q2_3<-data_isp_c %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.6q2_q4<-data_isp_c %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+#Edad
+T4.63e<-data_isp_c %>% group_by(edad_cat) %>% summarize(C=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.64e<-data_isp_c %>% group_by(edad_cat) %>% summarize(C=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+#Modalidad
+T4.6w3e<-data_isp_c %>% group_by(modalidad) %>% summarize(C=weighted.mean(red_apoyo_pre,pond1, na.rm = TRUE))
+T4.w64e<-data_isp_c %>% group_by(modalidad) %>% summarize(C=weighted.mean(red_apoyo_post,pond1, na.rm = TRUE))
+
+
+#################
 
 data_isp_c %>% count(red_apoyo_pre)
 data_isp_c %>% count(red_apoyo_post)
@@ -172,13 +219,14 @@ df_final_post %>% count(variable)
 df_final_post$variable = factor(df_final_post$variable, labels=c("red de apoyo durante la crisis sanitaria", "red de apoyo previa la crisis sanitaria"))
   
 order_arg = ggplot(df_final_post, aes(x=g,y=proportion)) +
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
   geom_text(aes(label = p), position = position_dodge(0.3), vjust=-0.8, size = 5)+
   facet_wrap(~variable, scales = "free_x")+
-  labs(x = "Respuesta", y = "%") +
-  scale_y_continuous(limits = c(0, 0.7), labels = scales::percent)+
-  geom_col()
+  labs(x = "Número de redes", y = "%") +
+  scale_y_continuous(limits = c(0, 0.7), labels = scales::percent)
+  
 
-#Horas de trabajo de cuidados en promedio
+  #Horas de trabajo de cuidados en promedio
 
 data_isp_c = data_isp_c %>%
   mutate(g3.1=case_when(
@@ -213,6 +261,32 @@ data_isp_c = data_isp_c %>%
     g3.2 %in% 11:22 ~ "11 o más"
   ))
 data_isp_c %>% count(g3.2) %>% View
+
+
+#Horas dedicada a cuidados en promedio
+T4.6_1<-data_isp_c %>% summarize(PH=weighted.mean(g3.1,pond1, na.rm = TRUE), SD=weighted.sd(g3.1,pond1, na.rm = TRUE))
+T4.6_2<-data_isp_c %>% summarize(PH=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
+#Pais
+T4.6_3ss<-data_isp_c %>% group_by(a0_pais) %>% summarize(C=weighted.mean(g3.1,pond1, na.rm = TRUE))
+T4.6_4ss<-data_isp_c %>% group_by(a0_pais) %>% summarize(C=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
+#Genero
+T4.6_3<-data_isp_c %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(g3.1,pond1, na.rm = TRUE))
+T4.6_4<-data_isp_c %>% group_by(a1_sexo) %>% summarize(C=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
+#Etnia
+T4.6q_3<-data_isp_c %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(g3.1,pond1, na.rm = TRUE))
+T4.6_q4<-data_isp_c %>% group_by(a5_etnia) %>% summarize(C=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
+#Edad
+T4.63<-data_isp_c %>% group_by(edad_cat) %>% summarize(C=weighted.mean(g3.1,pond1, na.rm = TRUE))
+T4.64<-data_isp_c %>% group_by(edad_cat) %>% summarize(C=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
+#Modalidad
+T4.6w3<-data_isp_c %>% group_by(modalidad) %>% summarize(C=weighted.mean(g3.1,pond1, na.rm = TRUE))
+T4.w64<-data_isp_c %>% group_by(modalidad) %>% summarize(C=weighted.mean(g3.2,pond1, na.rm = TRUE))
+
 
 data_isp_c = data_isp_c %>%
 mutate(g3.1=as.factor(g3.1)) %>% 
@@ -263,3 +337,140 @@ order_carg = ggplot(df_final_post, aes(x= factor(g,level = c("0","1","2","3","4"
   theme(axis.text.x = element_text(angle =90, hjust = 1)) +
   scale_y_continuous(limits = c(0, 0.3), labels = scales::percent)+
   geom_col()
+
+##Genero
+table_freq_02 <- mergesvy %>%
+  filter(!is.na(g3.1)) %>%
+  filter(a1_sexo!="Otro") %>% 
+  dplyr::group_by(a1_sexo, g3.1) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_1=data.frame(table_freq_02, digits=2)
+#summary(factor(df$proportion))
+
+df_1 = df_1 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>% 
+  rename(g=g3.1) %>% 
+  mutate(variable="g3.1") %>% 
+  rename(género=a1_sexo)
+
+##red de apoyo post 
+table_freq_3 <- mergesvy %>%
+  filter(!is.na(g3.2)) %>%
+  filter(a1_sexo!="Otro") %>% 
+  dplyr::group_by(a1_sexo,g3.2) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_2=data.frame(table_freq_3, digits=2)
+#summary(factor(df$proportion))
+
+df_2 = df_2 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>% 
+  rename(g=g3.2) %>% 
+  mutate(variable="g3.2")%>% 
+  rename(género=a1_sexo)
+
+df_final_post <- rbind(df_1, df_2)
+
+df_final_post$variable = factor(df_final_post$variable, labels=c("Horas de trabajo de cuidados previa la crisis sanitaria", "Horas de trabajo de cuidados durante la crisis sanitaria"))
+
+order_carg = ggplot(df_final_post, aes(x= factor(g,level = c("0","1","2","3","4","5","6","7","8","9","10", "11 o más")),y=proportion)) +
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 4, angle =90)+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(variable~género)+
+  labs(x = "Horas en promedio al día", y = "%") +
+  theme(axis.text.x = element_text(angle =90, hjust = 1)) +
+  scale_y_continuous(limits = c(0, 0.3), labels = scales::percent)
+
+
+##edad
+
+data_isp_c = data_isp_c %>%
+  mutate(edad_cat_recode=case_when(
+    edad_cat == "Adultos" ~ "Adultos",   #Factor
+    edad_cat == "Jóvenes" ~ "Jóvenes", 
+    TRUE ~ as.character(edad_cat) 
+  )) %>% 
+  filter(!is.na(edad_cat_recode))
+
+table_freq_02 <- mergesvy %>%
+  filter(!is.na(g3.1)) %>%
+  dplyr::group_by(edad_cat, g3.1) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_1=data.frame(table_freq_02, digits=2)
+#summary(factor(df$proportion))
+
+df_1 = df_1 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>% 
+  rename(g=g3.1) %>% 
+  mutate(variable="g3.1") %>% 
+  rename(Edad=edad_cat)
+
+##red de apoyo post 
+table_freq_3 <- mergesvy %>%
+  filter(!is.na(g3.2)) %>%
+  dplyr::group_by(edad_cat,g3.2) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_2=data.frame(table_freq_3, digits=2)
+#summary(factor(df$proportion))
+
+df_2 = df_2 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>% 
+  rename(g=g3.2) %>% 
+  mutate(variable="g3.2")%>% 
+  rename(Edad=edad_cat)
+
+df_final_post <- rbind(df_1, df_2)
+
+df_final_post$variable = factor(df_final_post$variable, labels=c("Horas de trabajo de cuidados previa la crisis sanitaria", "Horas de trabajo de cuidados durante la crisis sanitaria"))
+
+order_carg = ggplot(df_final_post, aes(x= factor(g,level = c("0","1","2","3","4","5","6","7","8","9","10", "11 o más")),y=proportion)) +
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 4, angle =90)+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(variable~Edad)+
+  labs(x = "Horas en promedio al día", y = "%") +
+  theme(axis.text.x = element_text(angle =90, hjust = 1)) +
+  scale_y_continuous(limits = c(0, 0.3), labels = scales::percent)
+
+#Modalidad
+
+table_freq_02 <- mergesvy %>%
+  filter(!is.na(g3.1)) %>%
+  dplyr::group_by(modalidad, g3.1) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_1=data.frame(table_freq_02, digits=2)
+#summary(factor(df$proportion))
+
+df_1 = df_1 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>% 
+  rename(g=g3.1) %>% 
+  mutate(variable="g3.1") 
+
+##red de apoyo post 
+table_freq_3 <- mergesvy %>%
+  filter(!is.na(g3.2)) %>%
+  dplyr::group_by(modalidad,g3.2) %>%
+  summarize(proportion = survey_mean(,na.rm=TRUE))
+df_2=data.frame(table_freq_3, digits=2)
+#summary(factor(df$proportion))
+
+df_2 = df_2 %>%
+  mutate(perc = proportion * 100) %>%
+  mutate(p=round(perc, 2)) %>%
+  rename(g=g3.2) %>% 
+  mutate(variable="g3.2")
+
+df_final_post <- rbind(df_1, df_2)
+
+df_final_post$variable = factor(df_final_post$variable, labels=c("Horas de trabajo de cuidados previa la crisis sanitaria", "Horas de trabajo de cuidados durante la crisis sanitaria"))
+
+order_carg = ggplot(df_final_post, aes(x= factor(g,level = c("0","1","2","3","4","5","6","7","8","9","10", "11 o más")),y=proportion)) +
+  geom_text(aes(label = p), position = position_dodge(0.8), vjust=0, hjust = -0.1, size = 4, angle =90)+
+  geom_bar(stat="identity", position = position_dodge(), fill="#d3d3d3")+
+  facet_wrap(variable~modalidad)+
+  labs(x = "Horas en promedio al día", y = "%") +
+  theme(axis.text.x = element_text(angle =90, hjust = 1)) +
+  scale_y_continuous(limits = c(0, 0.3), labels = scales::percent)
